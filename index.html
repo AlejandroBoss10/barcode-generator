@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Generate barcode labels in bulk for free. Scan or type item codes, add custom text, and export print-ready PDF labels sized to fit any label sheet. No signup, no install.">
+<title>Free Barcode Label Generator – Scan, Customize, Export to PDF</title>
+
+<!--
+  GOOGLE ADSENSE PLACEHOLDER
+  Once your AdSense account is approved, paste your site verification
+  snippet here (it looks like:
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
+  ).
+  Then place individual <ins class="adsbygoogle">...</ins> ad unit tags
+  wherever you want an ad to appear in the body (e.g. above the "Add item"
+  panel, or below the item grid) — NOT inside the toolbar or settings
+  panel, to keep the actual tool easy to use.
+-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/JsBarcode/3.11.5/JsBarcode.all.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+  :root{
+    --bg:#f4f5f7; --card:#ffffff; --border:#d9dce1; --border-strong:#b9bdc6;
+    --text:#1c1e21; --text-muted:#6b7280; --accent:#2563eb; --accent-hover:#1d4ed8;
+    --danger:#dc2626; --radius:10px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+    background:var(--bg); color:var(--text); padding:24px;
+  }
+  .wrap{max-width:980px; margin:0 auto;}
+  h1{font-size:22px; font-weight:600; margin:0 0 4px;}
+  .sub{color:var(--text-muted); font-size:14px; margin:0 0 24px;}
+
+  .panel{
+    background:var(--card); border:1px solid var(--border); border-radius:var(--radius);
+    padding:18px 20px; margin-bottom:20px;
+  }
+  .panel h2{font-size:15px; font-weight:600; margin:0 0 12px;}
+
+  .scan-row{display:flex; gap:10px; flex-wrap:wrap; align-items:flex-end;}
+  .field{display:flex; flex-direction:column; gap:4px; flex:1; min-width:160px;}
+  .field label{font-size:12px; color:var(--text-muted); font-weight:600;}
+  input[type=text], select{
+    height:38px; border:1px solid var(--border-strong); border-radius:8px;
+    padding:0 10px; font-size:14px; background:#fff; color:var(--text);
+  }
+  input[type=text]:focus, select:focus{outline:2px solid var(--accent); outline-offset:1px;}
+
+  button{
+    height:38px; border-radius:8px; border:1px solid var(--border-strong);
+    background:#fff; color:var(--text); font-size:14px; font-weight:600;
+    padding:0 16px; cursor:pointer;
+  }
+  button:hover{background:#f1f2f4;}
+  button.primary{background:var(--accent); border-color:var(--accent); color:#fff;}
+  button.primary:hover{background:var(--accent-hover);}
+  button.danger{color:var(--danger); border-color:var(--danger);}
+  button.danger:hover{background:#fdecec;}
+  button:disabled{opacity:.5; cursor:not-allowed;}
+
+  .toolbar{display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:10px;}
+  .toolbar .count{font-size:14px; color:var(--text-muted);}
+  .toolbar .actions{display:flex; gap:10px;}
+
+  .grid{
+    display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:14px;
+  }
+  .item{
+    background:var(--card); border:1px solid var(--border); border-radius:var(--radius);
+    padding:14px; display:flex; flex-direction:column; align-items:center; gap:8px;
+    position:relative;
+  }
+  .item .remove{
+    position:absolute; top:6px; right:6px; width:24px; height:24px; border-radius:50%;
+    border:1px solid var(--border-strong); background:#fff; color:var(--text-muted);
+    font-size:14px; line-height:1; padding:0; display:flex; align-items:center; justify-content:center;
+  }
+  .item .remove:hover{background:#fdecec; color:var(--danger); border-color:var(--danger);}
+  .item canvas{max-width:100%;}
+  .item .strtext{font-size:12px; color:var(--text-muted); word-break:break-all; text-align:center;}
+  .item textarea{
+    width:100%; min-height:42px; resize:vertical; border:1px solid var(--border-strong);
+    border-radius:6px; padding:6px 8px; font-size:13px; font-family:inherit; color:var(--text);
+  }
+  .item .label-num{font-size:11px; color:var(--text-muted); align-self:flex-start;}
+
+  .empty{
+    text-align:center; color:var(--text-muted); font-size:14px; padding:40px 0;
+  }
+  .hint{font-size:12px; color:var(--text-muted); margin-top:8px;}
+  .badge{
+    display:inline-block; font-size:11px; font-weight:600; padding:2px 8px; border-radius:99px;
+    background:#eef2ff; color:var(--accent); margin-left:6px;
+  }
+  .settings-head{
+    display:flex; align-items:center; justify-content:space-between; cursor:pointer; user-select:none;
+  }
+  .chev{font-size:13px; color:var(--text-muted); transition:transform .15s ease;}
+  .chev.open{transform:rotate(90deg);}
+  .presetlabel{font-size:12px; color:var(--text-muted); font-weight:600; display:block; margin-bottom:4px;}
+  .helplist{margin:12px 0 0; padding-left:20px; font-size:13px; color:var(--text); line-height:1.6;}
+  .helplist li{margin-bottom:8px;}
+  .helplist code{background:#f1f2f4; padding:1px 5px; border-radius:4px; font-size:12px;}
+  input[type=range]{height:6px; accent-color:var(--accent); cursor:pointer;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Batch barcode label generator</h1>
+  <p class="sub">A free tool for generating barcode labels in batches — built for inventory tagging, device serial numbers, IMEI tracking, and warehouse labeling. Scan or type each item's code, add your own custom label text underneath, and export everything to a print-ready PDF sized to your exact label dimensions. Works entirely in your browser — no account, no install, no data leaves your device.</p>
+  <p class="sub" style="margin-top:-6px;">Scan or type items one at a time below. Each gets its own barcode, the raw text under it, and a space for your custom label text.</p>
+
+  <div class="panel">
+    <h2>Add item</h2>
+    <div class="scan-row">
+      <div class="field" style="max-width:140px;">
+        <label for="barcodeType">Barcode type</label>
+        <select id="barcodeType">
+          <option value="CODE128" selected>Code 128 (any text)</option>
+          <option value="CODE39">Code 39</option>
+          <option value="EAN13">EAN-13 (13 digits)</option>
+          <option value="UPC">UPC-A (12 digits)</option>
+          <option value="ITF14">ITF-14 (14 digits)</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="scanInput">Scan or type item text</label>
+        <input type="text" id="scanInput" placeholder="e.g. 123456789012345" autofocus>
+      </div>
+      <div class="field" style="max-width:220px;">
+        <label for="customInput">Custom label text (optional)</label>
+        <input type="text" id="customInput" placeholder="e.g. Shelf A - Widget">
+      </div>
+      <button class="primary" id="addBtn">Add item</button>
+    </div>
+    <p class="hint">Tip: with a USB/Bluetooth barcode scanner, just click into "Scan or type item text" and scan — most scanners auto-press Enter, which adds the item instantly. Press Tab from the scan field to jump to the custom text field before hitting Enter.</p>
+  </div>
+
+  <div class="panel">
+    <div class="settings-head" id="settingsToggle">
+      <h2 style="margin:0;">PDF layout settings</h2>
+      <span class="chev" id="settingsChev">&#9656;</span>
+    </div>
+    <div id="settingsBody" class="settings-body" style="display:none;">
+      <div class="scan-row" style="margin-top:12px;">
+        <div class="field" style="max-width:140px;">
+          <label for="pageSize">Page size</label>
+          <select id="pageSize">
+            <option value="letter" selected>Letter (8.5x11in)</option>
+            <option value="a4">A4</option>
+          </select>
+        </div>
+        <div class="field" style="max-width:130px;">
+          <label for="labelW">Label width (in)</label>
+          <input type="text" id="labelW" value="3.0625">
+        </div>
+        <div class="field" style="max-width:130px;">
+          <label for="labelH">Label height (in)</label>
+          <input type="text" id="labelH" value="1.1875">
+        </div>
+        <div class="field" style="max-width:130px;">
+          <label for="labelGap">Gap between labels (in)</label>
+          <input type="text" id="labelGap" value="0.08">
+        </div>
+      </div>
+      <div class="scan-row" style="margin-top:12px;">
+        <div class="field" style="max-width:160px;">
+          <label for="textMode">Custom text layout</label>
+          <select id="textMode">
+            <option value="fit" selected>Shrink to fit one line</option>
+            <option value="wrap">Wrap to multiple lines</option>
+          </select>
+        </div>
+        <div class="field" style="max-width:130px;">
+          <label for="showCutLines">Cut lines</label>
+          <select id="showCutLines">
+            <option value="dashed">Dashed border</option>
+            <option value="none" selected>None</option>
+          </select>
+        </div>
+        <div class="field" style="max-width:150px;">
+          <label for="barcodeBorder">Barcode border (pt)</label>
+          <input type="text" id="barcodeBorder" value="1">
+        </div>
+        <div class="field" style="max-width:150px;">
+          <label for="innerPad">Inner padding (pt)</label>
+          <input type="text" id="innerPad" value="4">
+        </div>
+      </div>
+      <div class="scan-row" style="margin-top:12px;">
+        <div class="field" style="max-width:200px;">
+          <label for="barcodeRadius">Barcode border corner roundness (pt)</label>
+          <div style="display:flex; align-items:center; gap:10px;">
+            <input type="range" id="barcodeRadiusSlider" min="0" max="20" step="0.5" value="0" style="width:110px;">
+            <input type="text" id="barcodeRadius" value="0" style="width:54px; text-align:center;">
+          </div>
+        </div>
+      </div>
+      <div class="scan-row" style="margin-top:12px;">
+        <div class="field">
+          <span class="presetlabel">Quick presets</span>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button type="button" id="presetAvery" style="height:32px; font-size:12px; padding:0 10px;">3-1/16" x 1-3/16"</button>
+            <button type="button" id="presetSmall" style="height:32px; font-size:12px; padding:0 10px;">2" x 1"</button>
+            <button type="button" id="presetSheet" style="height:32px; font-size:12px; padding:0 10px;">1.5" x 0.5"</button>
+            <button type="button" id="presetTiny" style="height:32px; font-size:12px; padding:0 10px;">1.25" x 0.4"</button>
+          </div>
+        </div>
+
+      </div>
+      <p class="hint">Tip: 3-1/16" x 1-3/16" matches common Avery shipping/laser label sheets — good for sticking directly on devices.</p>
+      <div style="display:flex; justify-content:center; margin-top:16px; padding-top:14px; border-top:1px solid var(--border);">
+        <button type="button" class="primary" id="revertDefaultsBtn" style="height:32px; font-size:12px; padding:0 14px;">Revert to default settings</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="settings-head" id="helpToggle">
+      <h2 style="margin:0;">How saving / loading a queue works</h2>
+      <span class="chev" id="helpChev">&#9656;</span>
+    </div>
+    <div id="helpBody" class="settings-body" style="display:none;">
+      <ul class="helplist">
+        <li><strong>Save queue</strong> downloads everything currently listed below (every barcode value and its custom text) as a single <code>.json</code> file to your computer's Downloads folder. Nothing is uploaded anywhere — it just saves to your device.</li>
+        <li><strong>Load queue</strong> opens a file picker so you can pick a previously saved <code>.json</code> file back up. If you already have items queued, it'll ask whether to <em>add</em> the loaded items to your current list or <em>replace</em> it entirely.</li>
+        <li>This is handy for pausing a long scanning session — save before you stop, then load that same file later to pick up right where you left off — or for splitting work between two people and merging both queues into one PDF at the end.</li>
+        <li>Your PDF layout settings (label size, border, etc.) are <em>not</em> part of the saved file — only the scanned items and custom text are. Layout settings stay as whatever is currently set on this page.</li>
+        <li>Closing or refreshing this page without saving will lose your queue, since nothing is stored automatically — save a file first if you need to step away.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <div class="count"><span id="itemCount">0</span> item(s) queued</div>
+    <div class="actions">
+      <input type="file" id="loadFile" accept="application/json" style="display:none;">
+      <button id="loadBtn">Load queue</button>
+      <button id="saveBtn">Save queue</button>
+      <button class="danger" id="clearBtn">Clear all</button>
+      <button class="primary" id="exportBtn">Export PDF</button>
+    </div>
+  </div>
+
+  <div id="grid" class="grid"></div>
+  <div id="emptyState" class="empty">No items yet. Add your first one above.</div>
+
+  <footer style="margin-top:40px; padding-top:16px; border-top:1px solid var(--border); text-align:center; font-size:12px; color:var(--text-muted);">
+    <a href="privacy.html" style="color:var(--text-muted);">Privacy Policy</a>
+  </footer>
+</div>
+
+<script>
+let items = []; // {id, value, customText, type}
+let idCounter = 0;
+
+const grid = document.getElementById('grid');
+const emptyState = document.getElementById('emptyState');
+const itemCount = document.getElementById('itemCount');
+const scanInput = document.getElementById('scanInput');
+const customInput = document.getElementById('customInput');
+const barcodeType = document.getElementById('barcodeType');
+
+function addItem() {
+  const value = scanInput.value.trim();
+  if (!value) { scanInput.focus(); return; }
+  const item = {
+    id: idCounter++,
+    value: value,
+    customText: customInput.value.trim(),
+    type: barcodeType.value
+  };
+  items.push(item);
+  scanInput.value = '';
+  customInput.value = '';
+  render();
+  scanInput.focus();
+}
+
+function removeItem(id) {
+  items = items.filter(i => i.id !== id);
+  render();
+}
+
+// --- Settings panel toggle ---
+const settingsToggle = document.getElementById('settingsToggle');
+const settingsBody = document.getElementById('settingsBody');
+const settingsChev = document.getElementById('settingsChev');
+settingsToggle.onclick = () => {
+  const open = settingsBody.style.display !== 'none';
+  settingsBody.style.display = open ? 'none' : 'block';
+  settingsChev.classList.toggle('open', !open);
+};
+
+// --- Help panel toggle ---
+const helpToggle = document.getElementById('helpToggle');
+const helpBody = document.getElementById('helpBody');
+const helpChev = document.getElementById('helpChev');
+helpToggle.onclick = () => {
+  const open = helpBody.style.display !== 'none';
+  helpBody.style.display = open ? 'none' : 'block';
+  helpChev.classList.toggle('open', !open);
+};
+
+// --- Layout presets ---
+document.getElementById('presetAvery').onclick = () => {
+  document.getElementById('labelW').value = '3.0625';
+  document.getElementById('labelH').value = '1.1875';
+};
+document.getElementById('presetSmall').onclick = () => {
+  document.getElementById('labelW').value = '2';
+  document.getElementById('labelH').value = '1';
+};
+document.getElementById('presetSheet').onclick = () => {
+  document.getElementById('labelW').value = '1.5';
+  document.getElementById('labelH').value = '0.5';
+};
+document.getElementById('presetTiny').onclick = () => {
+  document.getElementById('labelW').value = '1.25';
+  document.getElementById('labelH').value = '0.4';
+};
+document.getElementById('barcodeBorder').addEventListener('input', render);
+
+// --- Barcode border corner roundness: slider <-> text box, live preview ---
+const radiusSlider = document.getElementById('barcodeRadiusSlider');
+const radiusText = document.getElementById('barcodeRadius');
+radiusSlider.addEventListener('input', () => {
+  radiusText.value = radiusSlider.value;
+  render();
+});
+radiusText.addEventListener('input', () => {
+  let v = parseFloat(radiusText.value);
+  if (!isFinite(v) || v < 0) v = 0;
+  if (v > 20) v = 20;
+  radiusSlider.value = v;
+  render();
+});
+
+// --- Default settings + revert button ---
+const DEFAULT_SETTINGS = {
+  pageSize: 'letter',
+  labelW: '3.0625',
+  labelH: '1.1875',
+  labelGap: '0.08',
+  textMode: 'fit',
+  showCutLines: 'none',
+  barcodeBorder: '1',
+  innerPad: '4',
+  barcodeRadius: '0'
+};
+
+function applyDefaultSettings() {
+  document.getElementById('pageSize').value = DEFAULT_SETTINGS.pageSize;
+  document.getElementById('labelW').value = DEFAULT_SETTINGS.labelW;
+  document.getElementById('labelH').value = DEFAULT_SETTINGS.labelH;
+  document.getElementById('labelGap').value = DEFAULT_SETTINGS.labelGap;
+  document.getElementById('textMode').value = DEFAULT_SETTINGS.textMode;
+  document.getElementById('showCutLines').value = DEFAULT_SETTINGS.showCutLines;
+  document.getElementById('barcodeBorder').value = DEFAULT_SETTINGS.barcodeBorder;
+  document.getElementById('innerPad').value = DEFAULT_SETTINGS.innerPad;
+  document.getElementById('barcodeRadius').value = DEFAULT_SETTINGS.barcodeRadius;
+  radiusSlider.value = DEFAULT_SETTINGS.barcodeRadius;
+  render();
+}
+document.getElementById('revertDefaultsBtn').onclick = () => {
+  applyDefaultSettings();
+};
+
+
+// --- Save / load queue ---
+document.getElementById('saveBtn').onclick = () => {
+  if (items.length === 0) { alert('Nothing to save yet — add some items first.'); return; }
+  const dataStr = JSON.stringify({ items: items, savedAt: new Date().toISOString() }, null, 2);
+  const blob = new Blob([dataStr], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const stamp = new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-');
+  a.href = url;
+  a.download = 'barcode-queue-' + stamp + '.json';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+};
+
+const loadFile = document.getElementById('loadFile');
+document.getElementById('loadBtn').onclick = () => loadFile.click();
+loadFile.addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (evt) => {
+    try {
+      const parsed = JSON.parse(evt.target.result);
+      const loadedItems = Array.isArray(parsed) ? parsed : parsed.items;
+      if (!Array.isArray(loadedItems)) throw new Error('No items array found in file.');
+      const append = items.length > 0 ? confirm('You have ' + items.length + ' item(s) already queued.\n\nClick OK to ADD the loaded items to your current queue, or Cancel to REPLACE the current queue.') : true;
+      const incoming = loadedItems.map(it => ({
+        id: idCounter++,
+        value: String(it.value || ''),
+        customText: String(it.customText || ''),
+        type: it.type || 'CODE128'
+      }));
+      items = append ? items.concat(incoming) : incoming;
+      render();
+    } catch (err) {
+      alert('Could not load that file: ' + err.message);
+    }
+  };
+  reader.readAsText(file);
+  loadFile.value = '';
+});
+
+function updateCustomText(id, text) {
+  const item = items.find(i => i.id === id);
+  if (item) item.customText = text;
+}
+
+function render() {
+  grid.innerHTML = '';
+  itemCount.textContent = items.length;
+  emptyState.style.display = items.length === 0 ? 'block' : 'none';
+
+  items.forEach((item, idx) => {
+    const card = document.createElement('div');
+    card.className = 'item';
+
+    const removeBtn = document.createElement('button');
+    removeBtn.className = 'remove';
+    removeBtn.innerHTML = '&times;';
+    removeBtn.title = 'Remove item';
+    removeBtn.onclick = () => removeItem(item.id);
+    card.appendChild(removeBtn);
+
+    const labelNum = document.createElement('div');
+    labelNum.className = 'label-num';
+    labelNum.textContent = '#' + (idx + 1);
+    card.appendChild(labelNum);
+
+    const canvasWrap = document.createElement('div');
+    canvasWrap.style.display = 'inline-block';
+    canvasWrap.style.lineHeight = '0';
+    const borderPt = parseFloat(document.getElementById('barcodeBorder').value) || 0;
+    const radiusPt = parseFloat(document.getElementById('barcodeRadius').value) || 0;
+    if (borderPt > 0) {
+      canvasWrap.style.border = borderPt + 'px solid #333';
+      canvasWrap.style.padding = '3px';
+      canvasWrap.style.borderRadius = radiusPt + 'px';
+    }
+    const canvas = document.createElement('canvas');
+    canvasWrap.appendChild(canvas);
+    card.appendChild(canvasWrap);
+
+    try {
+      JsBarcode(canvas, item.value, {
+        format: item.type,
+        displayValue: false,
+        height: 50,
+        width: 2,
+        margin: 4
+      });
+    } catch (e) {
+      const errMsg = document.createElement('div');
+      errMsg.style.color = '#dc2626';
+      errMsg.style.fontSize = '12px';
+      errMsg.textContent = 'Invalid value for ' + item.type + ': ' + e.message;
+      card.appendChild(errMsg);
+    }
+
+    const strText = document.createElement('div');
+    strText.className = 'strtext';
+    strText.textContent = item.value;
+    card.appendChild(strText);
+
+    const textarea = document.createElement('textarea');
+    textarea.placeholder = 'Custom text...';
+    textarea.value = item.customText;
+    textarea.oninput = (e) => updateCustomText(item.id, e.target.value);
+    card.appendChild(textarea);
+
+    grid.appendChild(card);
+  });
+}
+
+document.getElementById('addBtn').onclick = addItem;
+scanInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    addItem();
+  }
+});
+customInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    addItem();
+  }
+});
+
+document.getElementById('clearBtn').onclick = () => {
+  if (items.length === 0) return;
+  if (confirm('Remove all ' + items.length + ' queued item(s)?')) {
+    items = [];
+    render();
+  }
+};
+
+document.getElementById('exportBtn').onclick = () => {
+  if (items.length === 0) {
+    alert('Add at least one item before exporting.');
+    return;
+  }
+  exportPDF();
+};
+
+function parseInches(id, fallback) {
+  const v = parseFloat(document.getElementById(id).value);
+  return (isFinite(v) && v > 0) ? v : fallback;
+}
+
+// Shrinks font size until the text fits on one line within maxWidth (pt).
+function fitSingleLine(doc, text, maxWidth, startSize, minSize) {
+  let size = startSize;
+  doc.setFontSize(size);
+  while (size > minSize && doc.getTextWidth(text) > maxWidth) {
+    size -= 0.5;
+    doc.setFontSize(size);
+  }
+  return size;
+}
+
+// Wraps text into lines that fit maxWidth, shrinking font if needed to keep
+// the block within maxHeight, down to minSize. Returns {lines, size, lineH}.
+function fitWrapped(doc, text, maxWidth, maxHeight, startSize, minSize) {
+  let size = startSize;
+  let lines, lineH;
+  while (size >= minSize) {
+    doc.setFontSize(size);
+    lines = doc.splitTextToSize(text, maxWidth);
+    lineH = size * 1.15;
+    if (lines.length * lineH <= maxHeight || size <= minSize) break;
+    size -= 0.5;
+  }
+  return { lines, size, lineH };
+}
+
+function exportPDF() {
+  const { jsPDF } = window.jspdf;
+  const pageFormat = document.getElementById('pageSize').value;
+  const doc = new jsPDF({ unit: 'pt', format: pageFormat });
+
+  const pageW = doc.internal.pageSize.getWidth();
+  const pageH = doc.internal.pageSize.getHeight();
+  const margin = 18; // 0.25in outer margin
+
+  const labelWIn = parseInches('labelW', 3.0625);
+  const labelHIn = parseInches('labelH', 1.1875);
+  const gapIn = parseInches('labelGap', 0.08);
+  const textMode = document.getElementById('textMode').value;
+  const cutLines = document.getElementById('showCutLines').value;
+  const borderPt = Math.max(0, parseFloat(document.getElementById('barcodeBorder').value) || 0);
+  const radiusPt = Math.max(0, parseFloat(document.getElementById('barcodeRadius').value) || 0);
+  const pad = Math.max(0, parseFloat(document.getElementById('innerPad').value) || 0);
+
+  const cellW = labelWIn * 72;
+  const cellH = labelHIn * 72;
+  const gap = gapIn * 72;
+
+  const cols = Math.max(1, Math.floor((pageW - margin * 2 + gap) / (cellW + gap)));
+  const rows = Math.max(1, Math.floor((pageH - margin * 2 + gap) / (cellH + gap)));
+
+  let col = 0, row = 0;
+
+  items.forEach((item) => {
+    if (row >= rows) {
+      doc.addPage();
+      row = 0; col = 0;
+    }
+
+    const x = margin + col * (cellW + gap);
+    const y = margin + row * (cellH + gap);
+
+    if (cutLines === 'dashed') {
+      doc.setDrawColor(190);
+      doc.setLineDashPattern([2, 2], 0);
+      doc.rect(x, y, cellW, cellH);
+      doc.setLineDashPattern([], 0);
+    }
+
+    const hasCustom = !!item.customText;
+
+    // Tight content flow: barcode gets all available height minus just the
+    // text lines actually needed (no fixed/reserved "block" left unused).
+    const borderGap = borderPt > 0 ? borderPt + 2 : 0; // room for border stroke + breathing room
+    const strLineH = 9;
+    const customLineH = hasCustom ? (textMode === 'wrap' ? 0 : 10) : 0; // 'wrap' height computed after sizing barcode
+    const reservedBelow = strLineH + customLineH + 6;
+
+    const barcodeMaxW = cellW - pad * 2 - borderGap * 2;
+    const barcodeMaxH = Math.max(12, cellH - pad * 2 - borderGap * 2 - reservedBelow);
+
+    const tempCanvas = document.createElement('canvas');
+    let barcodeOk = true;
+    try {
+      JsBarcode(tempCanvas, item.value, {
+        format: item.type,
+        displayValue: false,
+        height: 60,
+        width: 2,
+        margin: 2
+      });
+    } catch (e) {
+      barcodeOk = false;
+    }
+
+    let drawW = barcodeMaxW, drawH = barcodeMaxH;
+    if (barcodeOk) {
+      const ratio = tempCanvas.width / tempCanvas.height;
+      drawH = barcodeMaxH;
+      drawW = drawH * ratio;
+      if (drawW > barcodeMaxW) {
+        drawW = barcodeMaxW;
+        drawH = drawW / ratio;
+      }
+    }
+
+    const imgX = x + (cellW - drawW) / 2;
+    const imgY = y + pad + borderGap;
+
+    if (barcodeOk) {
+      doc.addImage(tempCanvas.toDataURL('image/png'), 'PNG', imgX, imgY, drawW, drawH);
+    } else {
+      doc.setFontSize(8);
+      doc.setTextColor(220, 38, 38);
+      doc.text('Invalid value', x + cellW / 2, imgY + drawH / 2, { align: 'center', maxWidth: cellW - pad * 2 });
+    }
+
+    // Adjustable border drawn around the barcode image itself
+    if (borderPt > 0) {
+      doc.setDrawColor(40, 40, 40);
+      doc.setLineWidth(borderPt);
+      doc.setLineDashPattern([], 0);
+      const bx = imgX - borderGap / 2;
+      const by = imgY - borderGap / 2;
+      const bw = drawW + borderGap;
+      const bh = drawH + borderGap;
+      if (radiusPt > 0) {
+        doc.roundedRect(bx, by, bw, bh, radiusPt, radiusPt);
+      } else {
+        doc.rect(bx, by, bw, bh);
+      }
+      doc.setLineWidth(1);
+    }
+
+    // Barcode string text (single line, shrink to fit)
+    doc.setTextColor(80, 80, 80);
+    const strSize = fitSingleLine(doc, item.value, cellW - pad * 2, 8, 5);
+    doc.setFontSize(strSize);
+    const strY = imgY + drawH + borderGap / 2 + 9;
+    doc.text(item.value, x + cellW / 2, strY, { align: 'center' });
+
+    // Custom text
+    if (hasCustom) {
+      doc.setTextColor(20, 20, 20);
+      doc.setFont(undefined, 'bold');
+      const availW = cellW - pad * 2;
+      const remainingH = (y + cellH - pad) - (strY + 4);
+      let textTop = strY + 8;
+
+      if (textMode === 'fit') {
+        const size = fitSingleLine(doc, item.customText, availW, 9, 5);
+        doc.setFontSize(size);
+        doc.text(item.customText, x + cellW / 2, textTop, { align: 'center' });
+      } else {
+        const { lines, size, lineH } = fitWrapped(doc, item.customText, availW, Math.max(remainingH, 10), 9, 5);
+        doc.setFontSize(size);
+        lines.forEach((line, i) => {
+          doc.text(line, x + cellW / 2, textTop + i * lineH, { align: 'center' });
+        });
+      }
+      doc.setFont(undefined, 'normal');
+    }
+
+    col++;
+    if (col >= cols) { col = 0; row++; }
+  });
+
+  doc.save('barcode-labels.pdf');
+}
+
+render();
+</script>
+</body>
+</html>

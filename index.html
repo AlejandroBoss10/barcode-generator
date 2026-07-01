@@ -455,6 +455,29 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var n,r,i,a,
     text-align:center; color:var(--text-muted); font-size:14px; padding:40px 0;
   }
   .hint{font-size:12px; color:var(--text-muted); margin-top:8px;}
+
+  /* Tooltips */
+  .tip-wrap{position:relative; display:inline-flex; align-items:center; gap:5px;}
+  .tip-icon{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:14px; height:14px; border-radius:50%; background:var(--border-strong);
+    color:var(--text-muted); font-size:10px; font-weight:700; cursor:default;
+    flex-shrink:0; line-height:1; user-select:none;
+  }
+  .tip-icon:hover + .tip-box, .tip-icon:focus + .tip-box{ opacity:1; pointer-events:auto; transform:translateY(0); }
+  .tip-box{
+    position:absolute; bottom:calc(100% + 8px); left:50%; transform:translateX(-50%) translateY(4px);
+    background:#1c1e21; color:#fff; font-size:12px; line-height:1.5;
+    padding:8px 10px; border-radius:7px; width:220px; pointer-events:none;
+    opacity:0; transition:opacity .15s, transform .15s; z-index:99;
+    box-shadow:0 4px 14px rgba(0,0,0,.25);
+  }
+  .tip-box::after{
+    content:''; position:absolute; top:100%; left:50%; transform:translateX(-50%);
+    border:5px solid transparent; border-top-color:#1c1e21;
+  }
+  .field label .tip-wrap{ vertical-align:middle; }
+
   .badge{
     display:inline-block; font-size:11px; font-weight:600; padding:2px 8px; border-radius:99px;
     background:#eef2ff; color:var(--accent); margin-left:6px;
@@ -510,66 +533,69 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var n,r,i,a,
     <div id="settingsBody" class="settings-body" style="display:none;">
       <div class="scan-row" style="margin-top:12px;">
         <div class="field" style="max-width:140px;">
-          <label for="pageSize">Page size</label>
+          <label for="pageSize">Page size <span class="tip-wrap"><span class="tip-icon">?</span><span class="tip-box">The paper size your printer uses. Letter (8.5×11in) is standard in the US. Switch to A4 if your printer uses international paper.</span></span></label>
           <select id="pageSize">
             <option value="letter" selected>Letter (8.5x11in)</option>
             <option value="a4">A4</option>
           </select>
         </div>
         <div class="field" style="max-width:130px;">
-          <label for="labelW">Label width (in)</label>
+          <label for="labelW">Label width (in) <span class="tip-wrap"><span class="tip-icon">?</span><span class="tip-box">How wide each label is in inches. Making this smaller fits more labels side by side on the page. The live counter below shows how many columns you'll get.</span></span></label>
           <input type="text" id="labelW" value="3.0625">
         </div>
         <div class="field" style="max-width:130px;">
-          <label for="labelH">Label height (in)</label>
+          <label for="labelH">Label height (in) <span class="tip-wrap"><span class="tip-icon">?</span><span class="tip-box">How tall each label is in inches. Smaller height fits more rows on the page. The live counter below shows how many rows you'll get.</span></span></label>
           <input type="text" id="labelH" value="1.1875">
         </div>
         <div class="field" style="max-width:130px;">
-          <label for="labelGap">Gap between labels (in)</label>
+          <label for="labelGap">Gap between labels (in) <span class="tip-wrap"><span class="tip-icon">?</span><span class="tip-box">The space between labels on the page. Keeping this small (like 0.08) leaves just enough room to cut between them. Set to 0 for no gap at all.</span></span></label>
           <input type="text" id="labelGap" value="0.08">
+        </div>
+        <div class="field" style="max-width:160px; justify-content:flex-end;">
+          <span style="font-size:11px; color:var(--text-muted); font-weight:600; margin-bottom:4px; display:block;">Labels per page</span>
+          <span id="layoutCounter" style="font-size:22px; font-weight:700; color:var(--accent); line-height:1;">—</span>
+          <span id="layoutCounterSub" style="font-size:11px; color:var(--text-muted); margin-top:2px; display:block;">cols × rows</span>
         </div>
       </div>
       <div class="scan-row" style="margin-top:12px;">
         <div class="field" style="max-width:160px;">
-          <label for="textMode">Custom text layout</label>
+          <label for="textMode">Custom text layout <span class="tip-wrap"><span class="tip-icon">?</span><span class="tip-box">Controls how the custom text you typed below each barcode is printed. "Shrink to fit" keeps it on one line and makes the font smaller if needed. "Wrap" breaks it onto multiple lines at normal size.</span></span></label>
           <select id="textMode">
             <option value="fit" selected>Shrink to fit one line</option>
             <option value="wrap">Wrap to multiple lines</option>
           </select>
         </div>
         <div class="field" style="max-width:130px;">
-          <label for="showCutLines">Cut lines</label>
+          <label for="showCutLines">Cut lines <span class="tip-wrap"><span class="tip-icon">?</span><span class="tip-box">Prints a dashed border around each label so you know where to cut. Turn off if you're printing on pre-cut label sheets or don't want lines on the page.</span></span></label>
           <select id="showCutLines">
             <option value="dashed">Dashed border</option>
             <option value="none" selected>None</option>
           </select>
         </div>
         <div class="field" style="max-width:150px;">
-          <label for="barcodeBorder">Barcode border (pt)</label>
+          <label for="barcodeBorder">Barcode border (pt) <span class="tip-wrap"><span class="tip-icon">?</span><span class="tip-box">Draws a box around the barcode image itself. Set to 0 for no border. Higher numbers make the border thicker. 1–2pt is a good subtle border.</span></span></label>
           <input type="text" id="barcodeBorder" value="1">
         </div>
         <div class="field" style="max-width:150px;">
-          <label for="innerPad">Inner padding (pt)</label>
+          <label for="innerPad">Inner padding (pt) <span class="tip-wrap"><span class="tip-icon">?</span><span class="tip-box">The breathing room between the edge of the label and the barcode/text inside it. Think of it like a margin inside the label. 4pt is a safe default — lower it to fit more barcode, raise it to add space.</span></span></label>
           <input type="text" id="innerPad" value="4">
         </div>
         <div class="field" style="max-width:180px; justify-content:flex-end;">
           <label for="uniformHeight" style="display:flex; align-items:center; gap:8px; cursor:pointer; margin-top:18px;">
             <input type="checkbox" id="uniformHeight" checked style="width:15px; height:15px; accent-color:var(--accent); cursor:pointer; flex-shrink:0;">
-            <span>Uniform barcode height</span>
+            <span>Uniform barcode height <span class="tip-wrap"><span class="tip-icon">?</span><span class="tip-box">Forces every barcode on the page to print at the same height. Without this, barcodes with longer strings can end up slightly shorter than ones with shorter strings.</span></span></span>
           </label>
-          <span style="font-size:11px; color:var(--text-muted); margin-top:3px;">All barcodes same height in PDF</span>
         </div>
         <div class="field" style="max-width:180px; justify-content:flex-end;">
           <label for="uniformWidth" style="display:flex; align-items:center; gap:8px; cursor:pointer; margin-top:18px;">
             <input type="checkbox" id="uniformWidth" style="width:15px; height:15px; accent-color:var(--accent); cursor:pointer; flex-shrink:0;">
-            <span>Uniform barcode width</span>
+            <span>Uniform barcode width <span class="tip-wrap"><span class="tip-icon">?</span><span class="tip-box">Adjusts bar thickness so all barcodes print at a similar width. Longer strings naturally produce wider barcodes — this narrows them to match the shortest one. Still scannable, but bars will be thinner on longer strings.</span></span></span>
           </label>
-          <span style="font-size:11px; color:var(--text-muted); margin-top:3px;">All barcodes same width in PDF</span>
         </div>
       </div>
       <div class="scan-row" style="margin-top:12px;">
-        <div class="field" style="max-width:200px;">
-          <label for="barcodeRadius">Barcode border corner roundness (pt)</label>
+        <div class="field" style="max-width:240px;">
+          <label for="barcodeRadius">Border corner roundness (pt) <span class="tip-wrap"><span class="tip-icon">?</span><span class="tip-box">Rounds the corners of the barcode border box. 0 means sharp square corners. Drag the slider or type a number — higher values make the corners more rounded. Only visible when barcode border is set above 0.</span></span></label>
           <div style="display:flex; align-items:center; gap:10px;">
             <input type="range" id="barcodeRadiusSlider" min="0" max="20" step="0.5" value="0" style="width:110px;">
             <input type="text" id="barcodeRadius" value="0" style="width:54px; text-align:center;">
@@ -589,6 +615,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var n,r,i,a,
 
       </div>
       <p class="hint">Tip: 3-1/16" x 1-3/16" matches common Avery shipping/laser label sheets — good for sticking directly on devices.</p>
+      <p class="hint" style="color:#b45309; background:#fffbeb; border:1px solid #fde68a; border-radius:6px; padding:7px 10px; margin-top:8px;">⚠️ If a printed barcode won't scan, try turning off the <strong>Barcode border</strong> (set it to 0) and re-exporting. Borders placed too close to the bars can interfere with some scanners.</p>
       <div style="display:flex; justify-content:center; margin-top:16px; padding-top:14px; border-top:1px solid var(--border);">
         <button type="button" class="primary" id="revertDefaultsBtn" style="height:32px; font-size:12px; padding:0 14px;">Revert to default settings</button>
       </div>
@@ -624,6 +651,13 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var n,r,i,a,
 
   <div id="grid" class="grid"></div>
   <div id="emptyState" class="empty">No items yet. Add your first one above.</div>
+
+  <footer style="margin-top:48px; padding:20px 0 12px; border-top:1px solid var(--border); text-align:center;">
+    <p style="margin:0 0 4px; font-size:13px; font-weight:600; color:var(--text);">Batch Barcode Label Generator</p>
+    <p style="margin:0 0 8px; font-size:12px; color:var(--text-muted);">Created by <strong>Alejandro Zamora</strong></p>
+    <p style="margin:0 0 8px; font-size:11px; color:var(--text-muted);">© <span id="copyrightYear"></span> Alejandro Zamora. All rights reserved. Unauthorized copying, reproduction, or redistribution of this tool, in whole or in part, is strictly prohibited.</p>
+    <a href="privacy.html" style="font-size:11px; color:var(--text-muted);">Privacy Policy</a>
+  </footer>
 </div>
 
 <script>
@@ -697,6 +731,29 @@ document.getElementById('presetTiny').onclick = () => {
 };
 document.getElementById('barcodeBorder').addEventListener('input', render);
 
+// --- Live col × row counter ---
+function updateLayoutCounter() {
+  const pageFormat = document.getElementById('pageSize').value;
+  const pageW = pageFormat === 'a4' ? 595.28 : 612;
+  const pageH = pageFormat === 'a4' ? 841.89 : 792;
+  const margin = 18;
+  const labelWIn = parseFloat(document.getElementById('labelW').value) || 3.0625;
+  const labelHIn = parseFloat(document.getElementById('labelH').value) || 1.1875;
+  const gapIn = parseFloat(document.getElementById('labelGap').value) || 0.08;
+  const cellW = labelWIn * 72;
+  const cellH = labelHIn * 72;
+  const gap = gapIn * 72;
+  const cols = Math.max(1, Math.floor((pageW - margin * 2 + gap) / (cellW + gap)));
+  const rows = Math.max(1, Math.floor((pageH - margin * 2 + gap) / (cellH + gap)));
+  document.getElementById('layoutCounter').textContent = (cols * rows);
+  document.getElementById('layoutCounterSub').textContent = cols + ' col' + (cols !== 1 ? 's' : '') + ' × ' + rows + ' row' + (rows !== 1 ? 's' : '');
+}
+['pageSize','labelW','labelH','labelGap'].forEach(id => {
+  document.getElementById(id).addEventListener('input', updateLayoutCounter);
+  document.getElementById(id).addEventListener('change', updateLayoutCounter);
+});
+updateLayoutCounter();
+
 // --- Barcode border corner roundness: slider <-> text box, live preview ---
 const radiusSlider = document.getElementById('barcodeRadiusSlider');
 const radiusText = document.getElementById('barcodeRadius');
@@ -741,6 +798,7 @@ function applyDefaultSettings() {
   document.getElementById('uniformWidth').checked = DEFAULT_SETTINGS.uniformWidth;
   radiusSlider.value = DEFAULT_SETTINGS.barcodeRadius;
   render();
+  updateLayoutCounter();
 }
 document.getElementById('revertDefaultsBtn').onclick = () => {
   applyDefaultSettings();
@@ -1133,6 +1191,13 @@ function exportPDF() {
 }
 
 render();
+updateLayoutCounter();
+document.getElementById('copyrightYear').textContent = new Date().getFullYear();
 </script>
+<!--
+  Batch Barcode Label Generator
+  © 2025 Alejandro Zamora. All rights reserved.
+  Created by Alejandro Zamora. Unauthorized copying or redistribution prohibited.
+-->
 </body>
 </html>

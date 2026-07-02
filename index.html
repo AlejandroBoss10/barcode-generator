@@ -623,6 +623,51 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var n,r,i,a,
   </div>
 
   <div class="panel">
+    <div class="settings-head" id="csvToggle">
+      <h2 style="margin:0;">Bulk import from CSV / Excel</h2>
+      <span class="chev" id="csvChev">&#9656;</span>
+    </div>
+    <div id="csvBody" class="settings-body" style="display:none;">
+      <p style="font-size:13px; color:var(--text-muted); margin:12px 0 10px;">Import a spreadsheet of items all at once instead of scanning one at a time. Works with any CSV file from Excel, Google Sheets, or Numbers.</p>
+
+      <div style="background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:14px 16px; margin-bottom:14px;">
+        <p style="font-size:13px; font-weight:600; margin-bottom:8px; color:var(--text);">How to prepare your file:</p>
+        <ol style="font-size:13px; color:var(--text-muted); padding-left:18px; line-height:1.8; margin:0;">
+          <li>Open Excel or Google Sheets and put your barcode values in <strong>Column A</strong> (one per row)</li>
+          <li>Optionally put your custom label text in <strong>Column B</strong> on the same row</li>
+          <li>No header row needed — just start with your data in row 1</li>
+          <li>In Excel: File → Save As → CSV. In Google Sheets: File → Download → CSV</li>
+          <li>Click "Import CSV" below and select your file</li>
+        </ol>
+      </div>
+
+      <div style="background:#eef2ff; border:1px solid #c7d2fe; border-radius:8px; padding:10px 14px; margin-bottom:14px;">
+        <p style="font-size:12px; color:#3730a3; margin:0;">
+          <strong>Example:</strong> A spreadsheet with IMEI 352999001234567 in column A and "iPhone 14 - Shelf B" in column B would generate one barcode label with that IMEI and that custom text underneath.
+        </p>
+      </div>
+
+      <div class="scan-row" style="align-items:center; gap:12px;">
+        <div class="field" style="max-width:160px;">
+          <label for="csvBarcodeType">Barcode type for import</label>
+          <select id="csvBarcodeType">
+            <option value="CODE128" selected>Code 128 (any text)</option>
+            <option value="CODE39">Code 39</option>
+            <option value="EAN13">EAN-13 (13 digits)</option>
+            <option value="UPC">UPC-A (12 digits)</option>
+            <option value="ITF14">ITF-14 (14 digits)</option>
+          </select>
+        </div>
+        <div class="field" style="justify-content:flex-end; margin-top:18px;">
+          <input type="file" id="csvFile" accept=".csv,.txt" style="display:none;">
+          <button class="primary" id="csvImportBtn">Import CSV</button>
+        </div>
+        <div id="csvStatus" style="font-size:13px; color:var(--text-muted); margin-top:18px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
     <div class="settings-head" id="helpToggle">
       <h2 style="margin:0;">How saving / loading a queue works</h2>
       <span class="chev" id="helpChev">&#9656;</span>
@@ -715,6 +760,109 @@ helpToggle.onclick = () => {
   helpBody.style.display = open ? 'none' : 'block';
   helpChev.classList.toggle('open', !open);
 };
+
+// --- CSV panel toggle ---
+const csvToggle = document.getElementById('csvToggle');
+const csvBody = document.getElementById('csvBody');
+const csvChev = document.getElementById('csvChev');
+csvToggle.onclick = () => {
+  const open = csvBody.style.display !== 'none';
+  csvBody.style.display = open ? 'none' : 'block';
+  csvChev.classList.toggle('open', !open);
+};
+
+// --- CSV import ---
+const csvFile = document.getElementById('csvFile');
+const csvStatus = document.getElementById('csvStatus');
+
+document.getElementById('csvImportBtn').onclick = () => csvFile.click();
+
+csvFile.addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const barcodeType = document.getElementById('csvBarcodeType').value;
+  csvStatus.textContent = 'Reading file...';
+
+  const reader = new FileReader();
+  reader.onload = (evt) => {
+    try {
+      const text = evt.target.result;
+      // Parse CSV manually — handles quoted fields, commas inside quotes, CRLF and LF
+      const parseCSV = (str) => {
+        const rows = [];
+        let row = [], field = '', inQuotes = false;
+        for (let i = 0; i < str.length; i++) {
+          const ch = str[i];
+          const next = str[i + 1];
+          if (inQuotes) {
+            if (ch === '"' && next === '"') { field += '"'; i++; }
+            else if (ch === '"') { inQuotes = false; }
+            else { field += ch; }
+          } else {
+            if (ch === '"') { inQuotes = true; }
+            else if (ch === ',') { row.push(field.trim()); field = ''; }
+            else if (ch === '\n' || (ch === '\r' && next === '\n')) {
+              if (ch === '\r') i++;
+              row.push(field.trim()); field = '';
+              if (row.some(f => f !== '')) rows.push(row);
+              row = [];
+            } else if (ch === '\r') {
+              row.push(field.trim()); field = '';
+              if (row.some(f => f !== '')) rows.push(row);
+              row = [];
+            } else { field += ch; }
+          }
+        }
+        row.push(field.trim());
+        if (row.some(f => f !== '')) rows.push(row);
+        return rows;
+      };
+
+      const rows = parseCSV(text);
+      if (rows.length === 0) { csvStatus.textContent = 'No data found in file.'; return; }
+
+      // Skip header row if column A looks like a label (non-numeric/non-barcode text)
+      let startRow = 0;
+      const firstVal = (rows[0][0] || '').toLowerCase();
+      if (['barcode','value','imei','sku','code','item','serial','number','scan'].some(h => firstVal.includes(h))) {
+        startRow = 1;
+      }
+
+      const incoming = [];
+      let skipped = 0;
+      for (let i = startRow; i < rows.length; i++) {
+        const colA = (rows[i][0] || '').trim();
+        const colB = (rows[i][1] || '').trim();
+        if (!colA) { skipped++; continue; }
+        incoming.push({ id: idCounter++, value: colA, customText: colB, type: barcodeType });
+      }
+
+      if (incoming.length === 0) {
+        csvStatus.textContent = 'No valid rows found. Make sure column A has your barcode values.';
+        csvFile.value = ''; return;
+      }
+
+      const append = items.length > 0
+        ? confirm(`You have ${items.length} item(s) already queued.\n\nClick OK to ADD the ${incoming.length} imported item(s) to your current queue, or Cancel to REPLACE the current queue.`)
+        : true;
+
+      items = append ? items.concat(incoming) : incoming;
+      render();
+
+      let msg = `✓ Imported ${incoming.length} item${incoming.length !== 1 ? 's' : ''}`;
+      if (skipped > 0) msg += ` (${skipped} empty row${skipped !== 1 ? 's' : ''} skipped)`;
+      csvStatus.style.color = '#16a34a';
+      csvStatus.textContent = msg;
+      setTimeout(() => { csvStatus.textContent = ''; csvStatus.style.color = ''; }, 4000);
+
+    } catch (err) {
+      csvStatus.style.color = '#dc2626';
+      csvStatus.textContent = 'Could not read that file: ' + err.message;
+    }
+    csvFile.value = '';
+  };
+  reader.readAsText(file);
+});
 
 // --- Layout presets ---
 document.getElementById('presetAvery').onclick = () => {

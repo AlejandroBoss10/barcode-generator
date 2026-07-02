@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>About — Batch Barcode Label Generator</title>
+<meta name="description" content="Learn how the free Batch Barcode Label Generator works, who it's for, and get answers to common questions about generating and printing barcode labels.">
+<style>
+  :root{
+    --bg:#f4f5f7; --card:#ffffff; --border:#d9dce1; --border-strong:#b9bdc6;
+    --text:#1c1e21; --text-muted:#6b7280; --accent:#2563eb; --accent-hover:#1d4ed8;
+    --radius:10px;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+    background:var(--bg); color:var(--text); padding:24px;
+    line-height:1.65;
+  }
+  .wrap{max-width:720px; margin:0 auto;}
+
+  /* Nav */
+  .topnav{
+    display:flex; align-items:center; justify-content:space-between;
+    margin-bottom:32px; flex-wrap:wrap; gap:10px;
+  }
+  .topnav .brand{font-weight:700; font-size:16px; color:var(--text); text-decoration:none;}
+  .topnav .brand:hover{color:var(--accent);}
+  .topnav a.btn{
+    display:inline-block; background:var(--accent); color:#fff;
+    padding:8px 16px; border-radius:8px; font-size:14px; font-weight:600;
+    text-decoration:none;
+  }
+  .topnav a.btn:hover{background:var(--accent-hover);}
+
+  /* Hero */
+  .hero{
+    background:var(--card); border:1px solid var(--border); border-radius:var(--radius);
+    padding:32px 28px; margin-bottom:24px;
+  }
+  .hero h1{font-size:26px; font-weight:700; margin-bottom:8px; line-height:1.3;}
+  .hero .sub{color:var(--text-muted); font-size:15px; max-width:560px;}
+
+  /* Sections */
+  .section{
+    background:var(--card); border:1px solid var(--border); border-radius:var(--radius);
+    padding:24px 28px; margin-bottom:20px;
+  }
+  .section h2{font-size:17px; font-weight:700; margin-bottom:14px; padding-bottom:10px; border-bottom:1px solid var(--border);}
+
+  p{margin-bottom:12px; font-size:15px; color:var(--text);}
+  p:last-child{margin-bottom:0;}
+
+  /* FAQ */
+  .faq-item{margin-bottom:20px;}
+  .faq-item:last-child{margin-bottom:0;}
+  .faq-q{font-weight:600; font-size:15px; margin-bottom:6px; color:var(--text);}
+  .faq-a{font-size:14px; color:#374151; line-height:1.65;}
+
+  /* Use cases */
+  .usecases{display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:12px; margin-top:4px;}
+  .uc{
+    background:var(--bg); border:1px solid var(--border); border-radius:8px;
+    padding:12px 14px; font-size:14px; color:var(--text);
+  }
+  .uc .icon{font-size:20px; margin-bottom:6px;}
+  .uc .label{font-weight:600;}
+
+  /* Footer */
+  footer{
+    margin-top:40px; padding-top:16px; border-top:1px solid var(--border);
+    text-align:center; font-size:12px; color:var(--text-muted);
+  }
+  footer a{color:var(--text-muted); margin:0 8px; text-decoration:none;}
+  footer a:hover{color:var(--accent);}
+  footer p{font-size:12px; color:var(--text-muted); margin-top:6px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <nav class="topnav">
+    <a class="brand" href="index.html">← Batch Barcode Label Generator</a>
+    <a class="btn" href="index.html">Open the tool</a>
+  </nav>
+
+  <div class="hero">
+    <h1>About this tool</h1>
+    <p class="sub">A free, browser-based barcode label generator built to replace the old copy-paste-into-Word workflow. Scan items, add labels, export a PDF, print and cut. That's it.</p>
+  </div>
+
+  <div class="section">
+    <h2>What it does</h2>
+    <p>This tool lets you scan or type item codes — like IMEIs, serial numbers, SKUs, or any text string — and instantly generates a scannable barcode for each one. Below each barcode you'll see the raw code printed, and you can add your own custom label text underneath (like a device name, location, or description).</p>
+    <p>When you're done adding items, hit <strong>Export PDF</strong> and you get a print-ready document laid out in a grid, sized exactly to whatever label dimensions you set. Print it, cut it out, stick it on your items.</p>
+    <p>Everything runs entirely in your browser. No account needed, no data is sent anywhere, and no internet connection is required once the page has loaded.</p>
+  </div>
+
+  <div class="section">
+    <h2>Who it's for</h2>
+    <div class="usecases">
+      <div class="uc"><div class="icon">📱</div><div class="label">Device inventory</div><div>Tag phones, tablets, and laptops by IMEI or serial number</div></div>
+      <div class="uc"><div class="icon">📦</div><div class="label">Warehouse & storage</div><div>Label bins, shelves, and packages for quick scanning</div></div>
+      <div class="uc"><div class="icon">🏪</div><div class="label">Retail & resale</div><div>Create price or product labels for items without barcodes</div></div>
+      <div class="uc"><div class="icon">🛠️</div><div class="label">Repair shops</div><div>Track customer devices through intake and repair stages</div></div>
+      <div class="uc"><div class="icon">🏢</div><div class="label">Asset tracking</div><div>Tag office equipment, tools, and company property</div></div>
+      <div class="uc"><div class="icon">🗂️</div><div class="label">File & record management</div><div>Label folders, files, and physical records for scanning</div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Frequently asked questions</h2>
+
+    <div class="faq-item">
+      <div class="faq-q">Is this really free?</div>
+      <div class="faq-a">Yes — fully free to use, no signup, no limits on how many barcodes you generate. The site may display ads to keep it running, but the tool itself is free.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">Does it work with a barcode scanner gun?</div>
+      <div class="faq-a">Yes. Most USB and Bluetooth barcode scanners act like a keyboard — they type the scanned value and press Enter automatically. Just click into the "Scan or type item text" field and scan away. Each item gets added to the queue instantly.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">What barcode formats are supported?</div>
+      <div class="faq-a">Code 128 (default — works with any combination of letters and numbers), Code 39, EAN-13, UPC-A, and ITF-14. Code 128 is the right choice for most uses like IMEIs and serial numbers.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">My printed barcode won't scan. What do I do?</div>
+      <div class="faq-a">Try turning off the barcode border in the PDF layout settings (set it to 0) and re-exporting. A border placed too close to the bars can confuse some scanners. Also make sure you're printing at 100% scale — not "fit to page" — so the barcode dimensions are accurate.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">Can I save my work and come back to it later?</div>
+      <div class="faq-a">Yes. Use the <strong>Save queue</strong> button to download your current list of items as a small JSON file. Later, hit <strong>Load queue</strong> to pick up right where you left off. Nothing is stored online — the file lives on your computer.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">How do I fit more labels on a page?</div>
+      <div class="faq-a">Open the PDF layout settings panel and reduce the label width and/or height. The live counter shows how many columns and rows will fit on the page as you adjust. Reducing the gap between labels also helps squeeze in more per page.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">What label sheet sizes does it support?</div>
+      <div class="faq-a">You can enter any custom dimensions in inches. Quick presets include 3-1/16" × 1-3/16" (a standard Avery-compatible size), 2" × 1", 1.5" × 0.5", and 1.25" × 0.4". Letter (US) and A4 page sizes are both supported.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">Does it work offline or on restricted work networks?</div>
+      <div class="faq-a">Yes. The tool and all its libraries are bundled into a single file — no external requests are needed to generate barcodes or export PDFs. If you downloaded the offline version, it works completely without internet access.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">Is my data private?</div>
+      <div class="faq-a">Yes. Everything you type or scan stays in your browser — no data is sent to any server. See the <a href="privacy.html" style="color:var(--accent);">Privacy Policy</a> for full details.</div>
+    </div>
+
+  </div>
+
+  <footer>
+    <div>
+      <a href="index.html">Home</a>
+      <a href="about.html">About / FAQ</a>
+      <a href="privacy.html">Privacy Policy</a>
+    </div>
+    <p style="margin-top:10px;">Created by <strong>Alejandro Zamora</strong> &nbsp;·&nbsp; © <script>document.write(new Date().getFullYear())</script> Alejandro Zamora. All rights reserved.</p>
+    <p style="margin-top:6px; color:var(--border-strong);">Version 1.2</p>
+  </footer>
+
+</div>
+</body>
+</html>

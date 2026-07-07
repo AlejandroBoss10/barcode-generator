@@ -567,29 +567,43 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var n,r,i,a,
     <div id="settingsBody" class="settings-body" style="display:none;">
     <div class="panel-body">
       <div class="scan-row" style="margin-top:12px;">
-        <div class="field" style="max-width:140px;">
-          <label for="pageSize">Page size <span class="tip-wrap"><span class="tip-icon">?</span><span class="tip-box">The paper size your printer uses. Letter (8.5×11in) is standard in the US. Switch to A4 if your printer uses international paper.</span></span></label>
+        <div class="field" style="max-width:130px;">
+          <label for="pageSize">Page size <span class="tip-wrap"><span class="tip-icon">?</span><span class="tip-box">The paper size your printer uses. Letter (8.5x11in) is standard in the US. Switch to A4 for international paper.</span></span></label>
           <select id="pageSize">
             <option value="letter" selected>Letter (8.5x11in)</option>
             <option value="a4">A4</option>
           </select>
         </div>
-        <div class="field" style="max-width:130px;">
-          <label for="labelW">Label width (in) <span class="tip-wrap"><span class="tip-icon">?</span><span class="tip-box">How wide each label is in inches. Making this smaller fits more labels side by side on the page. The live counter below shows how many columns you'll get.</span></span></label>
-          <input type="text" id="labelW" value="3.0625">
+        <div class="field" style="max-width:110px;">
+          <label for="labelW">Width (in) <span class="tip-wrap"><span class="tip-icon">?</span><span class="tip-box">Label width in inches. Smaller = more columns per page. Watch the counter update live.</span></span></label>
+          <input type="text" id="labelW" value="2.2">
         </div>
-        <div class="field" style="max-width:130px;">
-          <label for="labelH">Label height (in) <span class="tip-wrap"><span class="tip-icon">?</span><span class="tip-box">How tall each label is in inches. Smaller height fits more rows on the page. The live counter below shows how many rows you'll get.</span></span></label>
-          <input type="text" id="labelH" value="1.1875">
+        <div class="field" style="max-width:110px;">
+          <label for="labelH">Height (in) <span class="tip-wrap"><span class="tip-icon">?</span><span class="tip-box">Label height in inches. Smaller = more rows per page.</span></span></label>
+          <input type="text" id="labelH" value="0.85">
         </div>
-        <div class="field" style="max-width:130px;">
-          <label for="labelGap">Gap between labels (in) <span class="tip-wrap"><span class="tip-icon">?</span><span class="tip-box">The space between labels on the page. Keeping this small (like 0.08) leaves just enough room to cut between them. Set to 0 for no gap at all.</span></span></label>
-          <input type="text" id="labelGap" value="0.08">
+        <div class="field" style="max-width:120px;">
+          <label for="labelGapH">H gap (in) <span class="tip-wrap"><span class="tip-icon">?</span><span class="tip-box">Horizontal space between labels (left-right). Use presets or type a custom value.</span></span></label>
+          <input type="text" id="labelGapH" value="0.08">
         </div>
-        <div class="field" style="max-width:160px; justify-content:flex-end;">
-          <span style="font-size:11px; color:var(--text-muted); font-weight:600; margin-bottom:4px; display:block;">Labels per page</span>
-          <span id="layoutCounter" style="font-size:22px; font-weight:700; color:var(--accent); line-height:1;">—</span>
-          <span id="layoutCounterSub" style="font-size:11px; color:var(--text-muted); margin-top:2px; display:block;">cols × rows</span>
+        <div class="field" style="max-width:120px;">
+          <label for="labelGapV">V gap (in) <span class="tip-wrap"><span class="tip-icon">?</span><span class="tip-box">Vertical space between labels (top-bottom). Reduce to pack rows tighter.</span></span></label>
+          <input type="text" id="labelGapV" value="0.08">
+        </div>
+        <div class="field" style="max-width:160px;">
+          <label>Spacing <span class="tip-wrap"><span class="tip-icon">?</span><span class="tip-box">Quick spacing presets. Close = tight. Normal = default. Spread = more breathing room.</span></span></label>
+          <div style="display:flex; gap:5px; margin-top:2px;">
+            <button type="button" id="gapClose" style="flex:1; height:32px; font-size:11px; padding:0 4px;">Close</button>
+            <button type="button" id="gapNormal" style="flex:1; height:32px; font-size:11px; padding:0 4px;">Normal</button>
+            <button type="button" id="gapSpread" style="flex:1; height:32px; font-size:11px; padding:0 4px;">Spread</button>
+          </div>
+        </div>
+        <div class="field" style="max-width:130px; justify-content:flex-end;">
+          <div class="counter-box">
+            <div class="num" id="layoutCounter">—</div>
+            <div class="lbl">Labels / page</div>
+            <div class="sub-lbl" id="layoutCounterSub">cols × rows</div>
+          </div>
         </div>
       </div>
       <div class="scan-row" style="margin-top:12px;">
@@ -3276,21 +3290,40 @@ function updateLayoutCounter() {
   const pageW = pageFormat === 'a4' ? 595.28 : 612;
   const pageH = pageFormat === 'a4' ? 841.89 : 792;
   const margin = 18;
-  const labelWIn = parseFloat(document.getElementById('labelW').value) || 3.0625;
-  const labelHIn = parseFloat(document.getElementById('labelH').value) || 1.1875;
-  const gapIn = parseFloat(document.getElementById('labelGap').value) || 0.08;
+  const labelWIn = parseFloat(document.getElementById('labelW').value) || 2.2;
+  const labelHIn = parseFloat(document.getElementById('labelH').value) || 0.85;
+  const gapHIn = parseFloat(document.getElementById('labelGapH').value) || 0;
+  const gapVIn = parseFloat(document.getElementById('labelGapV').value) || 0;
   const cellW = labelWIn * 72;
   const cellH = labelHIn * 72;
-  const gap = gapIn * 72;
-  const cols = Math.max(1, Math.floor((pageW - margin * 2 + gap) / (cellW + gap)));
-  const rows = Math.max(1, Math.floor((pageH - margin * 2 + gap) / (cellH + gap)));
+  const gapH = gapHIn * 72;
+  const gapV = gapVIn * 72;
+  const cols = Math.max(1, Math.floor((pageW - margin * 2 + gapH) / (cellW + gapH)));
+  const rows = Math.max(1, Math.floor((pageH - margin * 2 + gapV) / (cellH + gapV)));
   document.getElementById('layoutCounter').textContent = (cols * rows);
   document.getElementById('layoutCounterSub').textContent = cols + ' col' + (cols !== 1 ? 's' : '') + ' × ' + rows + ' row' + (rows !== 1 ? 's' : '');
 }
-['pageSize','labelW','labelH','labelGap'].forEach(id => {
+['pageSize','labelW','labelH','labelGapH','labelGapV'].forEach(id => {
   document.getElementById(id).addEventListener('input', updateLayoutCounter);
   document.getElementById(id).addEventListener('change', updateLayoutCounter);
 });
+
+// --- Spacing presets ---
+document.getElementById('gapClose').onclick = () => {
+  document.getElementById('labelGapH').value = '0.02';
+  document.getElementById('labelGapV').value = '0.02';
+  updateLayoutCounter();
+};
+document.getElementById('gapNormal').onclick = () => {
+  document.getElementById('labelGapH').value = '0.08';
+  document.getElementById('labelGapV').value = '0.08';
+  updateLayoutCounter();
+};
+document.getElementById('gapSpread').onclick = () => {
+  document.getElementById('labelGapH').value = '0.2';
+  document.getElementById('labelGapV').value = '0.2';
+  updateLayoutCounter();
+};
 updateLayoutCounter();
 
 // --- Barcode border corner roundness: slider <-> text box, live preview ---
@@ -3311,9 +3344,10 @@ radiusText.addEventListener('input', () => {
 // --- Default settings + revert button ---
 const DEFAULT_SETTINGS = {
   pageSize: 'letter',
-  labelW: '3.0625',
-  labelH: '1.1875',
-  labelGap: '0.08',
+  labelW: '2.2',
+  labelH: '0.85',
+  labelGapH: '0.08',
+  labelGapV: '0.08',
   textMode: 'fit',
   showCutLines: 'none',
   gridAlign: 'left',
@@ -3330,7 +3364,8 @@ function applyDefaultSettings() {
   document.getElementById('pageSize').value = DEFAULT_SETTINGS.pageSize;
   document.getElementById('labelW').value = DEFAULT_SETTINGS.labelW;
   document.getElementById('labelH').value = DEFAULT_SETTINGS.labelH;
-  document.getElementById('labelGap').value = DEFAULT_SETTINGS.labelGap;
+  document.getElementById('labelGapH').value = DEFAULT_SETTINGS.labelGapH;
+  document.getElementById('labelGapV').value = DEFAULT_SETTINGS.labelGapV;
   document.getElementById('textMode').value = DEFAULT_SETTINGS.textMode;
   document.getElementById('showCutLines').value = DEFAULT_SETTINGS.showCutLines;
   document.getElementById('gridAlign').value = DEFAULT_SETTINGS.gridAlign;
@@ -3393,6 +3428,14 @@ loadFile.addEventListener('change', (e) => {
   reader.readAsText(file);
   loadFile.value = '';
 });
+
+document.getElementById('clearBtn').onclick = () => {
+  if (items.length === 0) return;
+  if (confirm('Remove all ' + items.length + ' queued item(s)?')) {
+    items = [];
+    render();
+  }
+};
 
 function updateCustomText(id, text) {
   const item = items.find(i => i.id === id);
@@ -3676,7 +3719,8 @@ function exportPDF(printMode = false) {
 
   const labelWIn = parseInches('labelW', 3.0625);
   const labelHIn = parseInches('labelH', 1.1875);
-  const gapIn = parseInches('labelGap', 0.08);
+  const gapHIn = parseInches('labelGapH', 0.08);
+  const gapVIn = parseInches('labelGapV', 0.08);
   const textMode = document.getElementById('textMode').value;
   const cutLines = document.getElementById('showCutLines').value;
   const gridAlign = document.getElementById('gridAlign').value;
@@ -3687,20 +3731,16 @@ function exportPDF(printMode = false) {
   const rotation = parseInt(document.getElementById('barcodeRotation').value) || 0;
   const cellW = labelWIn * 72;
   const cellH = labelHIn * 72;
-  const gap = gapIn * 72;
+  const gapH = gapHIn * 72;
+  const gapV = gapVIn * 72;
 
   const uniformHeight = document.getElementById('uniformHeight').checked;
   const uniformWidth = document.getElementById('uniformWidth').checked;
 
-  // Pre-pass: compute locked height and/or width if toggles are on.
-  // For width: render each barcode at bar-width=2, record its natural canvas
-  // pixel width, find the narrowest, then compute the bar-width multiplier
-  // needed to squish all others down to match.
   const borderGapGlobal = borderPt > 0 ? borderPt + 2 : 0;
   const strLineH = 9;
   const stdBarWidth = 2;
 
-  // Returns { naturalW, naturalH, barCount } for a given item at stdBarWidth
   const measureBarcode = (item) => {
     const tc = document.createElement('canvas');
     try {
@@ -3731,9 +3771,6 @@ function exportPDF(printMode = false) {
     lockedDrawH = Math.min(...items.map(calcDrawH));
   }
 
-  // For uniform width: find the narrowest natural canvas pixel width across
-  // all items. Each item's bar-width multiplier = narrowestNaturalW / itsNaturalW,
-  // clamped to a minimum of 1px so barcodes stay scannable.
   let narrowestNaturalW = null;
   const measurements = {};
   if (uniformWidth && items.length > 0) {
@@ -3741,18 +3778,16 @@ function exportPDF(printMode = false) {
       const m = measureBarcode(item);
       measurements[item.id] = m;
       if (m.naturalW > 0) {
-        if (narrowestNaturalW === null || m.naturalW < narrowestNaturalW) {
-          narrowestNaturalW = m.naturalW;
-        }
+        if (narrowestNaturalW === null || m.naturalW < narrowestNaturalW) narrowestNaturalW = m.naturalW;
       }
     });
   }
 
-  const cols = Math.max(1, Math.floor((pageW - margin * 2 + gap) / (cellW + gap)));
-  const rows = Math.max(1, Math.floor((pageH - margin * 2 + gap) / (cellH + gap)));
+  const cols = Math.max(1, Math.floor((pageW - margin * 2 + gapH) / (cellW + gapH)));
+  const rows = Math.max(1, Math.floor((pageH - margin * 2 + gapV) / (cellH + gapV)));
 
-  // Calculate grid start X based on alignment
-  const totalGridW = cols * cellW + (cols - 1) * gap;
+  // Horizontal alignment
+  const totalGridW = cols * cellW + (cols - 1) * gapH;
   let startX = margin;
   if (gridAlign === 'center') startX = (pageW - totalGridW) / 2;
   else if (gridAlign === 'right') startX = pageW - margin - totalGridW;
@@ -3765,8 +3800,8 @@ function exportPDF(printMode = false) {
       row = 0; col = 0;
     }
 
-    const x = startX + col * (cellW + gap);
-    const y = margin + row * (cellH + gap);
+    const x = startX + col * (cellW + gapH);
+    const y = margin + row * (cellH + gapV);
 
     if (cutLines === 'dashed') {
       doc.setDrawColor(190);

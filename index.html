@@ -387,111 +387,132 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var n,r,i,a,
   :root{
     --bg:#f4f5f7; --card:#ffffff; --border:#d9dce1; --border-strong:#b9bdc6;
     --text:#1c1e21; --text-muted:#6b7280; --accent:#2563eb; --accent-hover:#1d4ed8;
-    --danger:#dc2626; --radius:10px;
+    --danger:#dc2626; --success:#16a34a;
+    --radius:12px; --radius-sm:8px;
+    --shadow:0 1px 3px rgba(0,0,0,.07), 0 1px 2px rgba(0,0,0,.04);
+    --accent-light:#eff6ff;
   }
   *{box-sizing:border-box;}
   body{
     margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
-    background:var(--bg); color:var(--text); padding:24px;
+    background:var(--bg); color:var(--text); padding:28px 24px;
   }
-  .wrap{max-width:980px; margin:0 auto;}
-  h1{font-size:22px; font-weight:600; margin:0 0 4px;}
-  .sub{color:var(--text-muted); font-size:14px; margin:0 0 24px;}
+  .wrap{max-width:1020px; margin:0 auto;}
+  h1{font-size:20px; font-weight:700; margin:0 0 4px; color:var(--text);}
+  .sub{color:var(--text-muted); font-size:13.5px; margin:0 0 24px; line-height:1.55; max-width:680px;}
 
   .panel{
-    background:var(--card); border:1px solid var(--border); border-radius:var(--radius);
-    padding:18px 20px; margin-bottom:20px;
+    background:var(--card); border:1px solid var(--border);
+    border-radius:var(--radius); margin-bottom:14px;
+    box-shadow:var(--shadow); overflow:hidden;
   }
-  .panel h2{font-size:15px; font-weight:600; margin:0 0 12px;}
+  .panel-body{padding:16px 20px 20px;}
+  .settings-section{margin-top:18px; padding-top:16px; border-top:1px solid var(--border);}
+  .settings-section:first-child{margin-top:0; padding-top:0; border-top:none;}
+  .section-label{font-size:10.5px; font-weight:700; color:#9ca3af; text-transform:uppercase; letter-spacing:.07em; margin-bottom:10px;}
 
   .scan-row{display:flex; gap:10px; flex-wrap:wrap; align-items:flex-end;}
-  .field{display:flex; flex-direction:column; gap:4px; flex:1; min-width:160px;}
-  .field label{font-size:12px; color:var(--text-muted); font-weight:600;}
+  .field{display:flex; flex-direction:column; gap:4px; flex:1; min-width:140px;}
+  .field label{font-size:11.5px; color:var(--text-muted); font-weight:600; line-height:1.3;}
   input[type=text], select{
-    height:38px; border:1px solid var(--border-strong); border-radius:8px;
-    padding:0 10px; font-size:14px; background:#fff; color:var(--text);
+    height:36px; border:1px solid var(--border-strong); border-radius:var(--radius-sm);
+    padding:0 10px; font-size:13.5px; background:#fff; color:var(--text);
+    transition:border-color .15s, box-shadow .15s;
   }
-  input[type=text]:focus, select:focus{outline:2px solid var(--accent); outline-offset:1px;}
+  input[type=text]:focus, select:focus{
+    outline:none; border-color:var(--accent);
+    box-shadow:0 0 0 3px rgba(37,99,235,.12);
+  }
 
   button{
-    height:38px; border-radius:8px; border:1px solid var(--border-strong);
-    background:#fff; color:var(--text); font-size:14px; font-weight:600;
-    padding:0 16px; cursor:pointer;
+    height:36px; border-radius:var(--radius-sm); border:1px solid var(--border-strong);
+    background:#fff; color:var(--text); font-size:13px; font-weight:600;
+    padding:0 14px; cursor:pointer; transition:background .12s, border-color .12s, box-shadow .12s;
+    white-space:nowrap;
   }
-  button:hover{background:#f1f2f4;}
+  button:hover{background:#f5f6f8; border-color:#9ca3af;}
   button.primary{background:var(--accent); border-color:var(--accent); color:#fff;}
-  button.primary:hover{background:var(--accent-hover);}
-  button.danger{color:var(--danger); border-color:var(--danger);}
-  button.danger:hover{background:#fdecec;}
-  button:disabled{opacity:.5; cursor:not-allowed;}
+  button.primary:hover{background:var(--accent-hover); border-color:var(--accent-hover); box-shadow:0 2px 8px rgba(37,99,235,.28);}
+  button.success{background:var(--success); border-color:var(--success); color:#fff;}
+  button.success:hover{background:#15803d; border-color:#15803d; box-shadow:0 2px 8px rgba(22,163,74,.28);}
+  button.danger{color:var(--danger); border-color:var(--border-strong);}
+  button.danger:hover{background:#fef2f2; border-color:var(--danger);}
+  button:disabled{opacity:.5; cursor:not-allowed; box-shadow:none;}
 
   .toolbar{display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:10px;}
-  .toolbar .count{font-size:14px; color:var(--text-muted);}
-  .toolbar .actions{display:flex; gap:10px;}
+  .toolbar .count{font-size:13px; color:var(--text-muted); font-weight:500;}
+  .toolbar .actions{display:flex; gap:8px; flex-wrap:wrap;}
 
-  .grid{
-    display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:14px;
-  }
+  .grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:12px;}
   .item{
     background:var(--card); border:1px solid var(--border); border-radius:var(--radius);
-    padding:14px; display:flex; flex-direction:column; align-items:center; gap:8px;
-    position:relative;
+    padding:14px; display:flex; flex-direction:column; align-items:center; gap:7px;
+    position:relative; box-shadow:var(--shadow); transition:border-color .15s;
   }
+  .item:hover{border-color:var(--border-strong);}
   .item .remove{
-    position:absolute; top:6px; right:6px; width:24px; height:24px; border-radius:50%;
-    border:1px solid var(--border-strong); background:#fff; color:var(--text-muted);
-    font-size:14px; line-height:1; padding:0; display:flex; align-items:center; justify-content:center;
+    position:absolute; top:8px; right:8px; width:22px; height:22px; border-radius:50%;
+    border:1px solid var(--border); background:var(--card); color:#9ca3af;
+    font-size:13px; line-height:1; padding:0; display:flex; align-items:center; justify-content:center;
+    cursor:pointer; transition:all .12s;
   }
-  .item .remove:hover{background:#fdecec; color:var(--danger); border-color:var(--danger);}
+  .item .remove:hover{background:#fef2f2; color:var(--danger); border-color:var(--danger);}
   .item canvas{max-width:100%;}
-  .item .strtext{font-size:12px; color:var(--text-muted); word-break:break-all; text-align:center;}
+  .item .strtext{font-size:11px; color:var(--text-muted); word-break:break-all; text-align:center; line-height:1.4;}
   .item textarea{
-    width:100%; min-height:42px; resize:vertical; border:1px solid var(--border-strong);
-    border-radius:6px; padding:6px 8px; font-size:13px; font-family:inherit; color:var(--text);
+    width:100%; min-height:38px; resize:vertical; border:1px solid var(--border-strong);
+    border-radius:6px; padding:5px 8px; font-size:12.5px; font-family:inherit; color:var(--text);
+    transition:border-color .15s;
   }
-  .item .label-num{font-size:11px; color:var(--text-muted); align-self:flex-start;}
+  .item textarea:focus{outline:none; border-color:var(--accent);}
+  .item .label-num{font-size:10px; font-weight:700; color:#9ca3af; text-transform:uppercase; letter-spacing:.05em; align-self:flex-start;}
 
-  .empty{
-    text-align:center; color:var(--text-muted); font-size:14px; padding:40px 0;
+  .empty{text-align:center; color:var(--text-muted); font-size:13.5px; padding:48px 0;}
+  .hint{font-size:11.5px; color:var(--text-muted); margin-top:8px; line-height:1.5;}
+
+  .settings-head{
+    display:flex; align-items:center; justify-content:space-between;
+    cursor:pointer; user-select:none; padding:15px 20px;
+    transition:background .12s;
   }
-  .hint{font-size:12px; color:var(--text-muted); margin-top:8px;}
+  .settings-head:hover{background:#fafbfc;}
+  .settings-head h2{font-size:13.5px; font-weight:700; margin:0; color:var(--text);}
+  .settings-head .head-sub{font-size:11.5px; color:var(--text-muted); margin-top:1px;}
+  .chev{font-size:11px; color:#9ca3af; transition:transform .15s ease; flex-shrink:0;}
+  .chev.open{transform:rotate(90deg);}
 
-  /* Tooltips */
-  .tip-wrap{position:relative; display:inline-flex; align-items:center; gap:5px;}
+  .counter-box{
+    background:var(--accent-light); border:1px solid #bfdbfe;
+    border-radius:var(--radius-sm); padding:10px 14px; text-align:center; min-width:90px;
+  }
+  .counter-box .num{font-size:22px; font-weight:800; color:var(--accent); line-height:1;}
+  .counter-box .lbl{font-size:10px; color:#3b82f6; font-weight:700; margin-top:2px; text-transform:uppercase; letter-spacing:.05em;}
+  .counter-box .sub-lbl{font-size:11px; color:#60a5fa; margin-top:2px;}
+
+  .badge{display:inline-block; font-size:11px; font-weight:600; padding:2px 8px; border-radius:99px; background:#eef2ff; color:var(--accent); margin-left:6px;}
+  .presetlabel{font-size:10.5px; font-weight:700; color:#9ca3af; text-transform:uppercase; letter-spacing:.06em; display:block; margin-bottom:6px;}
+  .helplist{margin:10px 0 0; padding-left:18px; font-size:13px; color:var(--text); line-height:1.65;}
+  .helplist li{margin-bottom:8px;}
+  .helplist code{background:#f1f2f4; padding:1px 5px; border-radius:4px; font-size:11.5px;}
+  input[type=range]{height:5px; accent-color:var(--accent); cursor:pointer;}
+  input[type=checkbox]{accent-color:var(--accent);}
+  .tip-wrap{position:relative; display:inline-flex; align-items:center; gap:4px; vertical-align:middle;}
   .tip-icon{
     display:inline-flex; align-items:center; justify-content:center;
-    width:14px; height:14px; border-radius:50%; background:var(--border-strong);
-    color:var(--text-muted); font-size:10px; font-weight:700; cursor:default;
+    width:13px; height:13px; border-radius:50%; background:var(--border-strong);
+    color:var(--text-muted); font-size:9px; font-weight:700; cursor:default;
     flex-shrink:0; line-height:1; user-select:none;
   }
-  .tip-icon:hover + .tip-box, .tip-icon:focus + .tip-box{ opacity:1; pointer-events:auto; transform:translateY(0); }
+  .tip-icon:hover + .tip-box{ opacity:1; pointer-events:auto; transform:translateX(-50%) translateY(0); }
   .tip-box{
-    position:absolute; bottom:calc(100% + 8px); left:50%; transform:translateX(-50%) translateY(4px);
-    background:#1c1e21; color:#fff; font-size:12px; line-height:1.5;
-    padding:8px 10px; border-radius:7px; width:220px; pointer-events:none;
+    position:absolute; bottom:calc(100% + 8px); left:50%;
+    transform:translateX(-50%) translateY(4px);
+    background:#1c1e21; color:#fff; font-size:11.5px; line-height:1.5;
+    padding:8px 10px; border-radius:7px; width:210px; pointer-events:none;
     opacity:0; transition:opacity .15s, transform .15s; z-index:99;
     box-shadow:0 4px 14px rgba(0,0,0,.25);
   }
-  .tip-box::after{
-    content:''; position:absolute; top:100%; left:50%; transform:translateX(-50%);
-    border:5px solid transparent; border-top-color:#1c1e21;
-  }
-  .field label .tip-wrap{ vertical-align:middle; }
-
-  .badge{
-    display:inline-block; font-size:11px; font-weight:600; padding:2px 8px; border-radius:99px;
-    background:#eef2ff; color:var(--accent); margin-left:6px;
-  }
-  .settings-head{
-    display:flex; align-items:center; justify-content:space-between; cursor:pointer; user-select:none;
-  }
-  .chev{font-size:13px; color:var(--text-muted); transition:transform .15s ease;}
-  .chev.open{transform:rotate(90deg);}
-  .presetlabel{font-size:12px; color:var(--text-muted); font-weight:600; display:block; margin-bottom:4px;}
-  .helplist{margin:12px 0 0; padding-left:20px; font-size:13px; color:var(--text); line-height:1.6;}
-  .helplist li{margin-bottom:8px;}
-  .helplist code{background:#f1f2f4; padding:1px 5px; border-radius:4px; font-size:12px;}
-  input[type=range]{height:6px; accent-color:var(--accent); cursor:pointer;}
+  .tip-box::after{content:''; position:absolute; top:100%; left:50%; transform:translateX(-50%); border:5px solid transparent; border-top-color:#1c1e21;}
 </style>
 </head>
 <body>
@@ -537,10 +558,14 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var n,r,i,a,
 
   <div class="panel">
     <div class="settings-head" id="settingsToggle">
-      <h2 style="margin:0;">PDF layout settings</h2>
+      <div>
+        <h2>⚙️ PDF layout settings</h2>
+        <div class="head-sub">Label size, alignment, barcode style, and more</div>
+      </div>
       <span class="chev" id="settingsChev">&#9656;</span>
     </div>
     <div id="settingsBody" class="settings-body" style="display:none;">
+    <div class="panel-body">
       <div class="scan-row" style="margin-top:12px;">
         <div class="field" style="max-width:140px;">
           <label for="pageSize">Page size <span class="tip-wrap"><span class="tip-icon">?</span><span class="tip-box">The paper size your printer uses. Letter (8.5×11in) is standard in the US. Switch to A4 if your printer uses international paper.</span></span></label>
@@ -582,6 +607,14 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var n,r,i,a,
             <option value="none" selected>None</option>
           </select>
         </div>
+        <div class="field" style="max-width:140px;">
+          <label for="gridAlign">Label alignment <span class="tip-wrap"><span class="tip-icon">?</span><span class="tip-box">Where the label grid sits horizontally on the page. Center is useful when you have fewer columns than could fit — keeps labels balanced on the printed sheet instead of hugging the left edge.</span></span></label>
+          <select id="gridAlign">
+            <option value="left" selected>Left</option>
+            <option value="center">Center</option>
+            <option value="right">Right</option>
+          </select>
+        </div>
         <div class="field" style="max-width:150px;">
           <label for="barcodeBorder">Barcode border (pt) <span class="tip-wrap"><span class="tip-icon">?</span><span class="tip-box">Draws a box around the barcode image itself. Set to 0 for no border. Higher numbers make the border thicker. 1–2pt is a good subtle border.</span></span></label>
           <input type="text" id="barcodeBorder" value="1">
@@ -590,6 +623,12 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var n,r,i,a,
           <label for="innerPad">Inner padding (pt) <span class="tip-wrap"><span class="tip-icon">?</span><span class="tip-box">The breathing room between the edge of the label and the barcode/text inside it. Think of it like a margin inside the label. 4pt is a safe default — lower it to fit more barcode, raise it to add space.</span></span></label>
           <input type="text" id="innerPad" value="4">
         </div>
+        <div class="field" style="max-width:160px;">
+          <label for="quietZone">Barcode side padding (pt) <span class="tip-wrap"><span class="tip-icon">?</span><span class="tip-box">White space on the left and right sides of the barcode bars — called a "quiet zone." Scanners need this space to detect where the barcode starts and ends. 6–10pt recommended. If barcodes aren't scanning, try increasing this first.</span></span></label>
+          <input type="text" id="quietZone" value="8">
+        </div>
+      </div>
+      <div class="scan-row" style="margin-top:12px;">
         <div class="field" style="max-width:180px; justify-content:flex-end;">
           <label for="uniformHeight" style="display:flex; align-items:center; gap:8px; cursor:pointer; margin-top:18px;">
             <input type="checkbox" id="uniformHeight" checked style="width:15px; height:15px; accent-color:var(--accent); cursor:pointer; flex-shrink:0;">
@@ -626,21 +665,44 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var n,r,i,a,
       </div>
       <p class="hint">Tip: 3-1/16" x 1-3/16" matches common Avery shipping/laser label sheets — good for sticking directly on devices.</p>
       <p class="hint" style="color:#b45309; background:#fffbeb; border:1px solid #fde68a; border-radius:6px; padding:7px 10px; margin-top:8px;">⚠️ If a printed barcode won't scan, try turning off the <strong>Barcode border</strong> (set it to 0) and re-exporting. Borders placed too close to the bars can interfere with some scanners.</p>
-      <div style="display:flex; justify-content:center; margin-top:16px; padding-top:14px; border-top:1px solid var(--border);">
-        <button type="button" class="primary" id="revertDefaultsBtn" style="height:32px; font-size:12px; padding:0 14px;">Revert to default settings</button>
+
+      <!-- Barcode rotation -->
+      <div class="settings-section">
+        <div class="section-label">Barcode orientation</div>
+        <div class="scan-row">
+          <div class="field" style="max-width:220px;">
+            <label for="barcodeRotation">Rotate barcodes <span class="tip-wrap"><span class="tip-icon">?</span><span class="tip-box">Rotates every barcode on the page. Useful for tall/narrow labels where a vertical barcode fits better. 90° rotates bars to run horizontally (reads left-to-right when label is turned). None is standard.</span></span></label>
+            <select id="barcodeRotation">
+              <option value="0" selected>None (standard)</option>
+              <option value="90">90° clockwise</option>
+              <option value="-90">90° counter-clockwise</option>
+              <option value="180">180° (upside down)</option>
+            </select>
+          </div>
+        </div>
       </div>
+
+      <div style="display:flex; justify-content:center; margin-top:18px; padding-top:14px; border-top:1px solid var(--border);">
+        <button type="button" class="primary" id="revertDefaultsBtn" style="height:32px; font-size:12px; padding:0 14px;">↩ Revert to default settings</button>
+      </div>
+    </div>
     </div>
   </div>
 
   <div class="panel">
     <div class="settings-head" id="csvToggle">
-      <h2 style="margin:0;">Bulk import from CSV / Excel</h2>
+      <div>
+        <h2>📥 Bulk import from CSV / Excel</h2>
+        <div class="head-sub">Import a whole spreadsheet at once</div>
+      </div>
       <span class="chev" id="csvChev">&#9656;</span>
     </div>
     <div id="csvBody" class="settings-body" style="display:none;">
-      <p style="font-size:13px; color:var(--text-muted); margin:12px 0 10px;">Import a spreadsheet of items all at once instead of scanning one at a time. Works with any CSV file from Excel, Google Sheets, or Numbers.</p>
+    <div class="panel-body">
+      <p style="font-size:13px; color:var(--text-muted); margin:0 0 12px;">Import a spreadsheet of items all at once instead of scanning one at a time. Works with any CSV file from Excel, Google Sheets, or Numbers.</p>
 
       <div style="background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:14px 16px; margin-bottom:14px;">
+
         <p style="font-size:13px; font-weight:600; margin-bottom:8px; color:var(--text);">How to prepare your file:</p>
         <ol style="font-size:13px; color:var(--text-muted); padding-left:18px; line-height:1.8; margin:0;">
           <li>Open Excel or Google Sheets and put your barcode values in <strong>Column A</strong> (one per row)</li>
@@ -676,14 +738,19 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var n,r,i,a,
         <div id="csvStatus" style="font-size:13px; color:var(--text-muted); margin-top:18px;"></div>
       </div>
     </div>
+    </div>
   </div>
 
   <div class="panel">
     <div class="settings-head" id="helpToggle">
-      <h2 style="margin:0;">How saving / loading a queue works</h2>
+      <div>
+        <h2>💾 How saving / loading a queue works</h2>
+        <div class="head-sub">Pause, resume, and share your sessions</div>
+      </div>
       <span class="chev" id="helpChev">&#9656;</span>
     </div>
     <div id="helpBody" class="settings-body" style="display:none;">
+    <div class="panel-body">
       <ul class="helplist">
         <li><strong>Save queue</strong> downloads everything currently listed below (every barcode value and its custom text) as a single <code>.json</code> file to your computer's Downloads folder. Nothing is uploaded anywhere — it just saves to your device.</li>
         <li><strong>Load queue</strong> opens a file picker so you can pick a previously saved <code>.json</code> file back up. If you already have items queued, it'll ask whether to <em>add</em> the loaded items to your current list or <em>replace</em> it entirely.</li>
@@ -692,21 +759,27 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var n,r,i,a,
         <li>Closing or refreshing this page without saving will lose your queue, since nothing is stored automatically — save a file first if you need to step away.</li>
       </ul>
     </div>
+    </div>
   </div>
 
   <div class="toolbar">
     <div class="count"><span id="itemCount">0</span> item(s) queued</div>
     <div class="actions">
       <input type="file" id="loadFile" accept="application/json" style="display:none;">
-      <button id="loadBtn">Load queue</button>
-      <button id="saveBtn">Save queue</button>
-      <button class="danger" id="clearBtn">Clear all</button>
+      <button id="loadBtn">💾 Load queue</button>
+      <button id="saveBtn">⬇ Save queue</button>
+      <button class="danger" id="clearBtn">✕ Clear all</button>
+      <button class="success" id="printBtn">🖨 Print</button>
       <button class="primary" id="exportBtn">Export PDF</button>
     </div>
   </div>
 
   <div id="grid" class="grid"></div>
-  <div id="emptyState" class="empty">No items yet. Add your first one above.</div>
+  <div id="emptyState" class="empty">
+    <div style="font-size:36px; margin-bottom:10px; opacity:.3;">🏷️</div>
+    <div style="font-weight:600; margin-bottom:4px;">No items yet</div>
+    <div style="font-size:13px;">Add your first barcode above, or import a CSV file.</div>
+  </div>
 
   <footer style="margin-top:48px; padding:20px 0 12px; border-top:1px solid var(--border); text-align:center;">
     <p style="margin:0 0 4px; font-size:13px; font-weight:600; color:var(--text);">Batch Barcode Label Generator</p>
@@ -716,7 +789,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var n,r,i,a,
       <a href="about.html" style="font-size:11px; color:var(--text-muted); margin:0 8px;">About / FAQ</a>
       <a href="privacy.html" style="font-size:11px; color:var(--text-muted); margin:0 8px;">Privacy Policy</a>
     </div>
-    <p style="font-size:11px; color:var(--border-strong);">Version 1.2</p>
+    <p style="font-size:11px; color:#c5cad4;">Version 1.3</p>
   </footer>
 </div>
 
@@ -3243,11 +3316,14 @@ const DEFAULT_SETTINGS = {
   labelGap: '0.08',
   textMode: 'fit',
   showCutLines: 'none',
+  gridAlign: 'left',
   barcodeBorder: '1',
   innerPad: '4',
+  quietZone: '8',
   barcodeRadius: '0',
   uniformHeight: true,
-  uniformWidth: false
+  uniformWidth: false,
+  barcodeRotation: '0'
 };
 
 function applyDefaultSettings() {
@@ -3257,11 +3333,14 @@ function applyDefaultSettings() {
   document.getElementById('labelGap').value = DEFAULT_SETTINGS.labelGap;
   document.getElementById('textMode').value = DEFAULT_SETTINGS.textMode;
   document.getElementById('showCutLines').value = DEFAULT_SETTINGS.showCutLines;
+  document.getElementById('gridAlign').value = DEFAULT_SETTINGS.gridAlign;
   document.getElementById('barcodeBorder').value = DEFAULT_SETTINGS.barcodeBorder;
   document.getElementById('innerPad').value = DEFAULT_SETTINGS.innerPad;
+  document.getElementById('quietZone').value = DEFAULT_SETTINGS.quietZone;
   document.getElementById('barcodeRadius').value = DEFAULT_SETTINGS.barcodeRadius;
   document.getElementById('uniformHeight').checked = DEFAULT_SETTINGS.uniformHeight;
   document.getElementById('uniformWidth').checked = DEFAULT_SETTINGS.uniformWidth;
+  document.getElementById('barcodeRotation').value = DEFAULT_SETTINGS.barcodeRotation;
   radiusSlider.value = DEFAULT_SETTINGS.barcodeRadius;
   render();
   updateLayoutCounter();
@@ -3517,6 +3596,43 @@ document.getElementById('exportBtn').onclick = async () => {
   }
 };
 
+// --- Print button: generate PDF and open browser print dialog ---
+document.getElementById('printBtn').onclick = async () => {
+  if (items.length === 0) {
+    alert('Add at least one item before printing.');
+    return;
+  }
+  const btn = document.getElementById('printBtn');
+  btn.disabled = true;
+  btn.textContent = 'Preparing…';
+  try {
+    await exportPDF(true);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '🖨 Print';
+  }
+};
+
+// --- Canvas rotation helper ---
+// Takes a canvas and rotation in degrees, returns a new rotated canvas.
+const rotateCanvas = (canvas, degrees) => {
+  if (!degrees || degrees === 0) return canvas;
+  const rad = degrees * Math.PI / 180;
+  const sin = Math.abs(Math.sin(rad));
+  const cos = Math.abs(Math.cos(rad));
+  const newW = Math.round(canvas.width * cos + canvas.height * sin);
+  const newH = Math.round(canvas.width * sin + canvas.height * cos);
+  const out = document.createElement('canvas');
+  out.width = newW;
+  out.height = newH;
+  const ctx = out.getContext('2d');
+  ctx.translate(newW / 2, newH / 2);
+  ctx.rotate(rad);
+  ctx.drawImage(canvas, -canvas.width / 2, -canvas.height / 2);
+  return out;
+};
+
+
 function parseInches(id, fallback) {
   const v = parseFloat(document.getElementById(id).value);
   return (isFinite(v) && v > 0) ? v : fallback;
@@ -3548,7 +3664,7 @@ function fitWrapped(doc, text, maxWidth, maxHeight, startSize, minSize) {
   return { lines, size, lineH };
 }
 
-function exportPDF() {
+function exportPDF(printMode = false) {
   return new Promise(async (resolve) => {
   const { jsPDF } = window.jspdf;
   const pageFormat = document.getElementById('pageSize').value;
@@ -3563,9 +3679,12 @@ function exportPDF() {
   const gapIn = parseInches('labelGap', 0.08);
   const textMode = document.getElementById('textMode').value;
   const cutLines = document.getElementById('showCutLines').value;
+  const gridAlign = document.getElementById('gridAlign').value;
   const borderPt = Math.max(0, parseFloat(document.getElementById('barcodeBorder').value) || 0);
   const radiusPt = Math.max(0, parseFloat(document.getElementById('barcodeRadius').value) || 0);
   const pad = Math.max(0, parseFloat(document.getElementById('innerPad').value) || 0);
+  const quietZone = Math.max(0, parseFloat(document.getElementById('quietZone').value) || 0);
+  const rotation = parseInt(document.getElementById('barcodeRotation').value) || 0;
   const cellW = labelWIn * 72;
   const cellH = labelHIn * 72;
   const gap = gapIn * 72;
@@ -3596,7 +3715,7 @@ function exportPDF() {
     const hasCustom = !!item.customText;
     const customLineH = hasCustom ? 10 : 0;
     const reservedBelow = strLineH + customLineH + 6;
-    const barcodeMaxW = cellW - pad * 2 - borderGapGlobal * 2;
+    const barcodeMaxW = cellW - pad * 2 - borderGapGlobal * 2 - quietZone * 2;
     const barcodeMaxH = Math.max(12, cellH - pad * 2 - borderGapGlobal * 2 - reservedBelow);
     const m = measureBarcode(item);
     if (!m.naturalW) return barcodeMaxH;
@@ -3632,6 +3751,12 @@ function exportPDF() {
   const cols = Math.max(1, Math.floor((pageW - margin * 2 + gap) / (cellW + gap)));
   const rows = Math.max(1, Math.floor((pageH - margin * 2 + gap) / (cellH + gap)));
 
+  // Calculate grid start X based on alignment
+  const totalGridW = cols * cellW + (cols - 1) * gap;
+  let startX = margin;
+  if (gridAlign === 'center') startX = (pageW - totalGridW) / 2;
+  else if (gridAlign === 'right') startX = pageW - margin - totalGridW;
+
   let col = 0, row = 0;
 
   for (const item of items) {
@@ -3640,7 +3765,7 @@ function exportPDF() {
       row = 0; col = 0;
     }
 
-    const x = margin + col * (cellW + gap);
+    const x = startX + col * (cellW + gap);
     const y = margin + row * (cellH + gap);
 
     if (cutLines === 'dashed') {
@@ -3656,7 +3781,7 @@ function exportPDF() {
     const customLineH = hasCustom ? (textMode === 'wrap' ? 0 : 10) : 0;
     const reservedBelow = strLineH + customLineH + 6;
 
-    const barcodeMaxW = cellW - pad * 2 - borderGap * 2;
+    const barcodeMaxW = cellW - pad * 2 - borderGap * 2 - quietZone * 2;
     const barcodeMaxH = Math.max(12, cellH - pad * 2 - borderGap * 2 - reservedBelow);
 
     let tempCanvas = null;
@@ -3697,7 +3822,6 @@ function exportPDF() {
     if (barcodeOk && tempCanvas) {
       const ratio = tempCanvas.width / tempCanvas.height;
       if (item.type === 'QRCODE') {
-        // QR: fit to square within available space
         const qrFit = Math.min(barcodeMaxW, barcodeMaxH);
         drawW = qrFit;
         drawH = qrFit;
@@ -3709,13 +3833,21 @@ function exportPDF() {
           drawH = drawW / ratio;
         }
       }
+      // For 90°/-90° rotations, swap the draw dimensions so the rotated image
+      // still fits within the label boundaries correctly.
+      if (rotation === 90 || rotation === -90) {
+        [drawW, drawH] = [drawH, drawW];
+      }
     }
+
+    // Apply rotation to the canvas before drawing
+    const finalCanvas = barcodeOk && tempCanvas ? rotateCanvas(tempCanvas, rotation) : tempCanvas;
 
     const imgX = x + (cellW - drawW) / 2;
     const imgY = y + pad + borderGap;
 
-    if (barcodeOk && tempCanvas) {
-      doc.addImage(tempCanvas.toDataURL('image/png'), 'PNG', imgX, imgY, drawW, drawH);
+    if (barcodeOk && finalCanvas) {
+      doc.addImage(finalCanvas.toDataURL('image/png'), 'PNG', imgX, imgY, drawW, drawH);
     } else {
       doc.setFontSize(8);
       doc.setTextColor(220, 38, 38);
@@ -3772,7 +3904,22 @@ function exportPDF() {
     if (col >= cols) { col = 0; row++; }
   }
 
-  doc.save('barcode-labels.pdf');
+  if (printMode) {
+    // Open in a new tab and trigger the browser's print dialog
+    doc.autoPrint();
+    const blob = doc.output('blob');
+    const url = URL.createObjectURL(blob);
+    const win = window.open(url, '_blank');
+    if (win) {
+      win.onload = () => { win.focus(); };
+    } else {
+      // Popup blocked — fallback to download
+      doc.save('barcode-labels.pdf');
+      alert('Popup was blocked. The PDF was downloaded instead — open it and use Ctrl+P to print.');
+    }
+  } else {
+    doc.save('barcode-labels.pdf');
+  }
   resolve();
   }); // end Promise
 }

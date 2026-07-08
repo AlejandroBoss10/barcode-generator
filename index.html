@@ -496,6 +496,63 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var n,r,i,a,
   .helplist code{background:#f1f2f4; padding:1px 5px; border-radius:4px; font-size:11.5px;}
   input[type=range]{height:5px; accent-color:var(--accent); cursor:pointer;}
   input[type=checkbox]{accent-color:var(--accent);}
+
+  /* ============ MATRIX MODE ============ */
+  body.matrix-mode {
+    --bg: #000000;
+    --card: #050f05;
+    --border: #00aa2a;
+    --border-strong: #00ff41;
+    --text: #00ff41;
+    --text-muted: #00cc33;
+    --text-light: #008f1f;
+    --accent: #00ff41;
+    --accent-hover: #00cc33;
+    --accent-light: #001a00;
+    --danger: #ff4141;
+    --success: #00ff41;
+    --shadow: 0 1px 8px rgba(0,255,65,0.15);
+    font-family: 'Courier New', Courier, monospace !important;
+  }
+  body.matrix-mode * { font-family: 'Courier New', Courier, monospace !important; }
+  body.matrix-mode h1 { text-shadow: 0 0 12px #00ff41; letter-spacing: 2px; }
+  body.matrix-mode .panel { border-color: #00aa2a; box-shadow: 0 0 12px rgba(0,255,65,0.1); }
+  body.matrix-mode .settings-head:hover { background: #001500; }
+  body.matrix-mode button { letter-spacing: 1px; }
+  body.matrix-mode button.primary { box-shadow: 0 0 12px rgba(0,255,65,0.4); }
+  body.matrix-mode input[type=text], body.matrix-mode select {
+    background: #050f05; color: #00ff41; border-color: #00aa2a;
+  }
+  body.matrix-mode input[type=text]:focus, body.matrix-mode select:focus {
+    box-shadow: 0 0 0 3px rgba(0,255,65,0.2);
+  }
+  body.matrix-mode .item { box-shadow: 0 0 8px rgba(0,255,65,0.08); }
+  body.matrix-mode .counter-box { background: #001a00; border-color: #00aa2a; }
+  body.matrix-mode .counter-box .num { color: #00ff41; text-shadow: 0 0 8px #00ff41; }
+  body.matrix-mode .tip-box { background: #001a00; border: 1px solid #00aa2a; }
+  body.matrix-mode .tip-box::after { border-top-color: #001a00; }
+
+  /* Background canvas for subtle rain in matrix mode */
+  #matrixBg {
+    display: none;
+    position: fixed; inset: 0; z-index: 0;
+    pointer-events: none; opacity: 0.07;
+  }
+  body.matrix-mode #matrixBg { display: block; }
+  body.matrix-mode .wrap { position: relative; z-index: 1; }
+
+  /* Floating Matrix toggle button */
+  #matrixToggleBtn {
+    display: none;
+    position: fixed; bottom: 20px; right: 20px; z-index: 1000;
+    background: #000; border: 1px solid #00ff41; color: #00ff41;
+    font-family: 'Courier New', monospace; font-size: 12px;
+    padding: 8px 14px; border-radius: 4px; cursor: pointer;
+    letter-spacing: 2px; box-shadow: 0 0 16px rgba(0,255,65,0.4);
+    transition: all .2s;
+  }
+  #matrixToggleBtn:hover { background: #00ff41; color: #000; }
+  #matrixToggleBtn.unlocked { display: block; }
   .tip-wrap{position:relative; display:inline-flex; align-items:center; gap:4px; vertical-align:middle;}
   .tip-icon{
     display:inline-flex; align-items:center; justify-content:center;
@@ -793,6 +850,24 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var n,r,i,a,
     <div style="font-size:36px; margin-bottom:10px; opacity:.3;">🏷️</div>
     <div style="font-weight:600; margin-bottom:4px;">No items yet</div>
     <div style="font-size:13px;">Add your first barcode above, or import a CSV file.</div>
+  </div>
+
+  <!-- Matrix background rain canvas (visible in matrix mode only) -->
+  <canvas id="matrixBg"></canvas>
+
+  <!-- Matrix mode floating toggle (unlocked by Konami code) -->
+  <button id="matrixToggleBtn">[ MATRIX: ON ]</button>
+
+  <!-- Konami Easter Egg Modal -->
+  <div id="konamiOverlay" style="display:none; position:fixed; inset:0; z-index:9999; align-items:center; justify-content:center; background:rgba(0,0,0,0.92);">
+    <canvas id="konamiCanvas" style="position:absolute; inset:0; width:100%; height:100%;"></canvas>
+    <div style="position:relative; z-index:2; text-align:center; padding:40px 50px; border:2px solid #00ff41; border-radius:4px; background:rgba(0,0,0,0.85); box-shadow:0 0 40px #00ff41, inset 0 0 40px rgba(0,255,65,0.03); max-width:600px;">
+      <div style="font-family:'Courier New',monospace; color:#00ff41; font-size:11px; margin-bottom:20px; opacity:0.6; letter-spacing:2px;">[ SYSTEM BREACH DETECTED ]</div>
+      <div style="font-family:'Courier New',monospace; color:#00ff41; font-size:32px; font-weight:700; letter-spacing:4px; text-shadow:0 0 20px #00ff41, 0 0 40px #00ff41; margin-bottom:8px; line-height:1.2;">THERE ARE NO</div>
+      <div style="font-family:'Courier New',monospace; color:#00ff41; font-size:32px; font-weight:700; letter-spacing:4px; text-shadow:0 0 20px #00ff41, 0 0 40px #00ff41; margin-bottom:24px; line-height:1.2;">EASTER EGGS HERE!</div>
+      <div style="font-family:'Courier New',monospace; color:#00cc33; font-size:12px; margin-bottom:28px; opacity:0.7; letter-spacing:1px;">&gt; You didn't find anything.<br>&gt; Please close this window and move along.<br>&gt; Nothing to see here._</div>
+      <button id="konamiClose" style="font-family:'Courier New',monospace; background:transparent; border:1px solid #00ff41; color:#00ff41; padding:10px 28px; font-size:13px; letter-spacing:3px; cursor:pointer; text-transform:uppercase; transition:all .2s;" onmouseover="this.style.background='#00ff41';this.style.color='#000';" onmouseout="this.style.background='transparent';this.style.color='#00ff41';">[ CLOSE ]</button>
+    </div>
   </div>
 
   <footer style="margin-top:48px; padding:20px 0 12px; border-top:1px solid var(--border); text-align:center;">
@@ -3962,6 +4037,138 @@ function exportPDF(printMode = false) {
 render();
 updateLayoutCounter();
 document.getElementById('copyrightYear').textContent = new Date().getFullYear();
+
+// --- Konami Code Easter Egg + Matrix Mode ---
+(function() {
+  const KONAMI = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a','Enter'];
+  let pos = 0;
+  let matrixModeOn = false;
+  let bgRainInterval = null;
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === KONAMI[pos]) {
+      pos++;
+      if (pos === KONAMI.length) {
+        pos = 0;
+        unlockMatrixMode();
+        showMatrix();
+      }
+    } else {
+      pos = e.key === KONAMI[0] ? 1 : 0;
+    }
+  });
+
+  // --- Unlock matrix mode (first time Konami is entered) ---
+  function unlockMatrixMode() {
+    const btn = document.getElementById('matrixToggleBtn');
+    btn.classList.add('unlocked');
+    if (!matrixModeOn) activateMatrixMode();
+  }
+
+  function activateMatrixMode() {
+    matrixModeOn = true;
+    document.body.classList.add('matrix-mode');
+    document.getElementById('matrixToggleBtn').textContent = '[ MATRIX: ON ]';
+    startBgRain();
+  }
+
+  function deactivateMatrixMode() {
+    matrixModeOn = false;
+    document.body.classList.remove('matrix-mode');
+    document.getElementById('matrixToggleBtn').textContent = '[ MATRIX: OFF ]';
+    stopBgRain();
+  }
+
+  document.getElementById('matrixToggleBtn').onclick = () => {
+    matrixModeOn ? deactivateMatrixMode() : activateMatrixMode();
+  };
+
+  // --- Subtle background rain (low opacity, always running in matrix mode) ---
+  function startBgRain() {
+    const canvas = document.getElementById('matrixBg');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    const ctx = canvas.getContext('2d');
+    const chars = 'アイウエオカキクケコ01アサシスセソタチツ10ナニヌネノハヒフヘ01ホ10マミムメ01モラリルレロ';
+    const fontSize = 13;
+    const cols = Math.floor(canvas.width / fontSize);
+    const drops = Array.from({length: cols}, () => Math.random() * -50);
+
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    bgRainInterval = setInterval(() => {
+      ctx.fillStyle = 'rgba(0,0,0,0.07)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#00ff41';
+      ctx.font = fontSize + 'px monospace';
+      for (let i = 0; i < cols; i++) {
+        const ch = chars[Math.floor(Math.random() * chars.length)];
+        ctx.fillText(ch, i * fontSize, drops[i] * fontSize);
+        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+        drops[i] += 0.5; // slower than the popup rain
+      }
+    }, 60);
+
+    window.addEventListener('resize', () => {
+      if (!matrixModeOn) return;
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    });
+  }
+
+  function stopBgRain() {
+    clearInterval(bgRainInterval);
+    bgRainInterval = null;
+    const canvas = document.getElementById('matrixBg');
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
+
+  // --- Konami popup (the "no easter eggs" modal) ---
+  function showMatrix() {
+    document.getElementById('konamiOverlay').style.display = 'flex';
+    startModalRain();
+  }
+
+  function startModalRain() {
+    const canvas = document.getElementById('konamiCanvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    const chars = 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    const fontSize = 14;
+    const cols = Math.floor(canvas.width / fontSize);
+    const drops = Array(cols).fill(1);
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    const rain = setInterval(() => {
+      if (!document.getElementById('konamiOverlay') || document.getElementById('konamiOverlay').style.display === 'none') {
+        clearInterval(rain); return;
+      }
+      ctx.fillStyle = 'rgba(0,0,0,0.05)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#00ff41';
+      ctx.font = fontSize + 'px monospace';
+      for (let i = 0; i < drops.length; i++) {
+        const ch = chars[Math.floor(Math.random() * chars.length)];
+        ctx.fillText(ch, i * fontSize, drops[i] * fontSize);
+        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+        drops[i]++;
+      }
+    }, 40);
+    document.getElementById('konamiOverlay')._rainInterval = rain;
+  }
+
+  document.getElementById('konamiClose').onclick = () => {
+    const overlay = document.getElementById('konamiOverlay');
+    clearInterval(overlay._rainInterval);
+    overlay.style.display = 'none';
+    const canvas = document.getElementById('konamiCanvas');
+    canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+  };
+})();
+
 </script>
 <!--
   Batch Barcode Label Generator

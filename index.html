@@ -574,6 +574,15 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var n,r,i,a,
 </head>
 <body>
 <div class="wrap">
+
+  <!-- Development notice -->
+  <div style="background:#fffbeb; border:1px solid #f59e0b; border-radius:10px; padding:12px 16px; margin-bottom:20px; display:flex; gap:12px; align-items:flex-start;">
+    <span style="font-size:18px; flex-shrink:0;">⚠️</span>
+    <div style="font-size:13px; color:#78350f; line-height:1.6;">
+      <strong>Notice — Active Development:</strong> This tool is still being actively developed and updated frequently. There is a possibility that certain features may not work as expected during this period while bugs are identified and resolved. If you experience any issues or would like to share feedback, please reach out via email at <a href="mailto:atzamora01@gmail.com" style="color:#b45309; font-weight:600;">atzamora01@gmail.com</a>.
+    </div>
+  </div>
+
   <h1>Batch barcode label generator</h1>
   <p class="sub">Scan or type items one at a time. Each gets its own barcode, the raw text below it, and a space for your custom label text. When you're done, export everything to a print-ready PDF.</p>
 
@@ -623,7 +632,35 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var n,r,i,a,
     </div>
     <div id="settingsBody" class="settings-body" style="display:none;">
     <div class="panel-body">
-      <div class="scan-row" style="margin-top:12px;">
+
+      <!-- Barcode border — single consolidated section -->
+      <div class="scan-row" style="margin-bottom:14px; padding-bottom:14px; border-bottom:1px solid var(--border); align-items:flex-end; flex-wrap:wrap; gap:12px;">
+        <div class="field" style="max-width:180px;">
+          <label for="borderEnabled" style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+            <input type="checkbox" id="borderEnabled" checked style="width:16px; height:16px; accent-color:var(--accent); cursor:pointer; flex-shrink:0;">
+            <span style="font-size:13px; font-weight:600; color:var(--text);">Barcode border</span>
+            <span class="tip-wrap"><span class="tip-icon">?</span><span class="tip-box">Draw a box around each barcode. Turn this off if barcodes aren't scanning — the border can interfere if it's too close to the bars.</span></span>
+          </label>
+          <span style="font-size:11px; color:var(--text-muted); margin-top:3px; display:block;">Toggle border on/off</span>
+        </div>
+        <div class="field" style="max-width:130px;">
+          <label for="barcodeBorder">Thickness (pt) <span class="tip-wrap"><span class="tip-icon">?</span><span class="tip-box">How thick the border line is. 1pt is subtle, 2–3pt is more visible.</span></span></label>
+          <input type="text" id="barcodeBorder" value="1">
+        </div>
+        <div class="field" style="max-width:160px;">
+          <label for="quietZone">Space inside border (pt) <span class="tip-wrap"><span class="tip-icon">?</span><span class="tip-box">White space between the barcode bars and the border line. Scanners need this gap to read the barcode. 6–10pt recommended. Increase this if barcodes aren't scanning.</span></span></label>
+          <input type="text" id="quietZone" value="8">
+        </div>
+        <div class="field" style="max-width:200px;">
+          <label for="barcodeRadius">Corner roundness (pt) <span class="tip-wrap"><span class="tip-icon">?</span><span class="tip-box">Rounds the corners of the border box. 0 = square corners. Drag slider or type a number.</span></span></label>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <input type="range" id="barcodeRadiusSlider" min="0" max="20" step="0.5" value="0" style="width:90px;">
+            <input type="text" id="barcodeRadius" value="0" style="width:44px; text-align:center;">
+          </div>
+        </div>
+      </div>
+
+      <div class="scan-row" style="margin-top:0;">
         <div class="field" style="max-width:130px;">
           <label for="pageSize">Page size <span class="tip-wrap"><span class="tip-icon">?</span><span class="tip-box">The paper size your printer uses. Letter (8.5x11in) is standard in the US. Switch to A4 for international paper.</span></span></label>
           <select id="pageSize">
@@ -633,11 +670,11 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var n,r,i,a,
         </div>
         <div class="field" style="max-width:110px;">
           <label for="labelW">Width (in) <span class="tip-wrap"><span class="tip-icon">?</span><span class="tip-box">Label width in inches. Smaller = more columns per page. Watch the counter update live.</span></span></label>
-          <input type="text" id="labelW" value="2.2">
+          <input type="text" id="labelW" value="2.5">
         </div>
         <div class="field" style="max-width:110px;">
           <label for="labelH">Height (in) <span class="tip-wrap"><span class="tip-icon">?</span><span class="tip-box">Label height in inches. Smaller = more rows per page.</span></span></label>
-          <input type="text" id="labelH" value="0.85">
+          <input type="text" id="labelH" value="0.9">
         </div>
         <div class="field" style="max-width:120px;">
           <label for="labelGapH">H gap (in) <span class="tip-wrap"><span class="tip-icon">?</span><span class="tip-box">Horizontal space between labels (left-right). Use presets or type a custom value.</span></span></label>
@@ -687,16 +724,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var n,r,i,a,
           </select>
         </div>
         <div class="field" style="max-width:150px;">
-          <label for="barcodeBorder">Barcode border (pt) <span class="tip-wrap"><span class="tip-icon">?</span><span class="tip-box">Draws a box around the barcode image itself. Set to 0 for no border. Higher numbers make the border thicker. 1–2pt is a good subtle border.</span></span></label>
-          <input type="text" id="barcodeBorder" value="1">
-        </div>
-        <div class="field" style="max-width:150px;">
           <label for="innerPad">Inner padding (pt) <span class="tip-wrap"><span class="tip-icon">?</span><span class="tip-box">The breathing room between the edge of the label and the barcode/text inside it. Think of it like a margin inside the label. 4pt is a safe default — lower it to fit more barcode, raise it to add space.</span></span></label>
           <input type="text" id="innerPad" value="4">
-        </div>
-        <div class="field" style="max-width:160px;">
-          <label for="quietZone">Barcode side padding (pt) <span class="tip-wrap"><span class="tip-icon">?</span><span class="tip-box">White space on the left and right sides of the barcode bars — called a "quiet zone." Scanners need this space to detect where the barcode starts and ends. 6–10pt recommended. If barcodes aren't scanning, try increasing this first.</span></span></label>
-          <input type="text" id="quietZone" value="8">
         </div>
       </div>
       <div class="scan-row" style="margin-top:12px;">
@@ -711,15 +740,6 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var n,r,i,a,
             <input type="checkbox" id="uniformWidth" style="width:15px; height:15px; accent-color:var(--accent); cursor:pointer; flex-shrink:0;">
             <span>Uniform barcode width <span class="tip-wrap"><span class="tip-icon">?</span><span class="tip-box">Adjusts bar thickness so all barcodes print at a similar width. Longer strings naturally produce wider barcodes — this narrows them to match the shortest one. Still scannable, but bars will be thinner on longer strings.</span></span></span>
           </label>
-        </div>
-      </div>
-      <div class="scan-row" style="margin-top:12px;">
-        <div class="field" style="max-width:240px;">
-          <label for="barcodeRadius">Border corner roundness (pt) <span class="tip-wrap"><span class="tip-icon">?</span><span class="tip-box">Rounds the corners of the barcode border box. 0 means sharp square corners. Drag the slider or type a number — higher values make the corners more rounded. Only visible when barcode border is set above 0.</span></span></label>
-          <div style="display:flex; align-items:center; gap:10px;">
-            <input type="range" id="barcodeRadiusSlider" min="0" max="20" step="0.5" value="0" style="width:110px;">
-            <input type="text" id="barcodeRadius" value="0" style="width:54px; text-align:center;">
-          </div>
         </div>
       </div>
       <div class="scan-row" style="margin-top:12px;">
@@ -878,7 +898,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var n,r,i,a,
       <a href="about.html" style="font-size:11px; color:var(--text-muted); margin:0 8px;">About / FAQ</a>
       <a href="privacy.html" style="font-size:11px; color:var(--text-muted); margin:0 8px;">Privacy Policy</a>
     </div>
-    <p style="font-size:11px; color:#c5cad4;">Version 1.3</p>
+    <p style="font-size:11px; color:#c5cad4;">Version 1.4</p>
   </footer>
 </div>
 
@@ -3358,6 +3378,7 @@ document.getElementById('presetTiny').onclick = () => {
   document.getElementById('labelH').value = '0.4';
 };
 document.getElementById('barcodeBorder').addEventListener('input', render);
+document.getElementById('borderEnabled').addEventListener('change', render);
 
 // --- Live col × row counter ---
 function updateLayoutCounter() {
@@ -3365,8 +3386,8 @@ function updateLayoutCounter() {
   const pageW = pageFormat === 'a4' ? 595.28 : 612;
   const pageH = pageFormat === 'a4' ? 841.89 : 792;
   const margin = 18;
-  const labelWIn = parseFloat(document.getElementById('labelW').value) || 2.2;
-  const labelHIn = parseFloat(document.getElementById('labelH').value) || 0.85;
+  const labelWIn = parseFloat(document.getElementById('labelW').value) || 2.5;
+  const labelHIn = parseFloat(document.getElementById('labelH').value) || 0.9;
   const gapHIn = parseFloat(document.getElementById('labelGapH').value) || 0;
   const gapVIn = parseFloat(document.getElementById('labelGapV').value) || 0;
   const cellW = labelWIn * 72;
@@ -3419,8 +3440,8 @@ radiusText.addEventListener('input', () => {
 // --- Default settings + revert button ---
 const DEFAULT_SETTINGS = {
   pageSize: 'letter',
-  labelW: '2.2',
-  labelH: '0.85',
+  labelW: '2.5',
+  labelH: '0.9',
   labelGapH: '0.08',
   labelGapV: '0.08',
   textMode: 'fit',
@@ -3541,7 +3562,8 @@ function render() {
     const canvasWrap = document.createElement('div');
     canvasWrap.style.display = 'inline-block';
     canvasWrap.style.lineHeight = '0';
-    const borderPt = parseFloat(document.getElementById('barcodeBorder').value) || 0;
+    const borderEnabled = document.getElementById('borderEnabled') ? document.getElementById('borderEnabled').checked : true;
+    const borderPt = borderEnabled ? (parseFloat(document.getElementById('barcodeBorder').value) || 0) : 0;
     const radiusPt = parseFloat(document.getElementById('barcodeRadius').value) || 0;
     if (borderPt > 0) {
       canvasWrap.style.border = borderPt + 'px solid #333';
@@ -3799,7 +3821,8 @@ function exportPDF(printMode = false) {
   const textMode = document.getElementById('textMode').value;
   const cutLines = document.getElementById('showCutLines').value;
   const gridAlign = document.getElementById('gridAlign').value;
-  const borderPt = Math.max(0, parseFloat(document.getElementById('barcodeBorder').value) || 0);
+  const borderEnabled = document.getElementById('borderEnabled') ? document.getElementById('borderEnabled').checked : true;
+  const borderPt = borderEnabled ? Math.max(0, parseFloat(document.getElementById('barcodeBorder').value) || 0) : 0;
   const radiusPt = Math.max(0, parseFloat(document.getElementById('barcodeRadius').value) || 0);
   const pad = Math.max(0, parseFloat(document.getElementById('innerPad').value) || 0);
   const quietZone = Math.max(0, parseFloat(document.getElementById('quietZone').value) || 0);
@@ -3812,7 +3835,9 @@ function exportPDF(printMode = false) {
   const uniformHeight = document.getElementById('uniformHeight').checked;
   const uniformWidth = document.getElementById('uniformWidth').checked;
 
-  const borderGapGlobal = borderPt > 0 ? borderPt + 2 : 0;
+  // quietZone is the actual white space between barcode bars and border
+  // borderGapGlobal is used only for pre-pass size calculations
+  const borderGapGlobal = quietZone;
   const strLineH = 9;
   const stdBarWidth = 2;
 
@@ -3887,18 +3912,18 @@ function exportPDF(printMode = false) {
 
     const hasCustom = !!item.customText;
 
-    const borderGap = borderPt > 0 ? borderPt + 2 : 0;
+    // quietZone is the white space between the barcode bars and the border box
     const customLineH = hasCustom ? (textMode === 'wrap' ? 0 : 10) : 0;
     const reservedBelow = strLineH + customLineH + 6;
 
-    const barcodeMaxW = cellW - pad * 2 - borderGap * 2 - quietZone * 2;
-    const barcodeMaxH = Math.max(12, cellH - pad * 2 - borderGap * 2 - reservedBelow);
+    // Available barcode drawing area: subtract padding and quiet zones on both sides
+    const barcodeMaxW = cellW - pad * 2 - quietZone * 2;
+    const barcodeMaxH = Math.max(12, cellH - pad * 2 - quietZone - reservedBelow);
 
     let tempCanvas = null;
     let barcodeOk = true;
 
     if (item.type === 'QRCODE') {
-      // QR codes are square — use min(maxW, maxH) for the size
       const qrSize = Math.min(barcodeMaxW, barcodeMaxH);
       try {
         tempCanvas = await generateQRCanvas(item.value, item.qrLogo, Math.round(qrSize * 4));
@@ -3907,7 +3932,6 @@ function exportPDF(printMode = false) {
       }
     } else {
       tempCanvas = document.createElement('canvas');
-      // Determine bar width: shrink if uniformWidth is on
       let barWidth = stdBarWidth;
       if (uniformWidth && narrowestNaturalW !== null) {
         const m = measurements[item.id] || measureBarcode(item);
@@ -3943,18 +3967,16 @@ function exportPDF(printMode = false) {
           drawH = drawW / ratio;
         }
       }
-      // For 90°/-90° rotations, swap the draw dimensions so the rotated image
-      // still fits within the label boundaries correctly.
       if (rotation === 90 || rotation === -90) {
         [drawW, drawH] = [drawH, drawW];
       }
     }
 
-    // Apply rotation to the canvas before drawing
     const finalCanvas = barcodeOk && tempCanvas ? rotateCanvas(tempCanvas, rotation) : tempCanvas;
 
+    // Barcode image position: centered horizontally, padded + quiet zone from top
     const imgX = x + (cellW - drawW) / 2;
-    const imgY = y + pad + borderGap;
+    const imgY = y + pad + (quietZone > 0 ? quietZone / 2 : 0);
 
     if (barcodeOk && finalCanvas) {
       doc.addImage(finalCanvas.toDataURL('image/png'), 'PNG', imgX, imgY, drawW, drawH);
@@ -3964,15 +3986,15 @@ function exportPDF(printMode = false) {
       doc.text('Invalid value', x + cellW / 2, imgY + drawH / 2, { align: 'center', maxWidth: cellW - pad * 2 });
     }
 
-    // Adjustable border drawn around the barcode image itself
+    // Border: drawn OUTSIDE the barcode image, with quietZone as the gap
     if (borderPt > 0) {
       doc.setDrawColor(40, 40, 40);
       doc.setLineWidth(borderPt);
       doc.setLineDashPattern([], 0);
-      const bx = imgX - borderGap / 2;
-      const by = imgY - borderGap / 2;
-      const bw = drawW + borderGap;
-      const bh = drawH + borderGap;
+      const bx = imgX - quietZone;
+      const by = imgY - quietZone / 2;
+      const bw = drawW + quietZone * 2;
+      const bh = drawH + quietZone;
       if (radiusPt > 0) {
         doc.roundedRect(bx, by, bw, bh, radiusPt, radiusPt);
       } else {
@@ -3981,11 +4003,11 @@ function exportPDF(printMode = false) {
       doc.setLineWidth(1);
     }
 
-    // Barcode string text (single line, shrink to fit)
+    // Barcode string text
     doc.setTextColor(80, 80, 80);
     const strSize = fitSingleLine(doc, item.value, cellW - pad * 2, 8, 5);
     doc.setFontSize(strSize);
-    const strY = imgY + drawH + borderGap / 2 + 9;
+    const strY = imgY + drawH + (quietZone > 0 ? quietZone / 2 : 0) + 9;
     doc.text(item.value, x + cellW / 2, strY, { align: 'center' });
 
     // Custom text
